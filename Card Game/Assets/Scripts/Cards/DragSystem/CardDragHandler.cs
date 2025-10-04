@@ -25,6 +25,7 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             canvasGroup = gameObject.AddComponent<CanvasGroup>();
     }
 
+    // 在 OnBeginDrag 方法中，移除任何锁定相关的代码
     public void OnBeginDrag(PointerEventData eventData)
     {
         originalPosition = rectTransform.anchoredPosition;
@@ -35,7 +36,13 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         if (currentSlot != null)
         {
             Debug.Log($"从卡槽 {currentSlot.slotType} 中拖出卡牌");
-            currentSlot.RemoveCard();  // ← 确保卡槽知道卡牌被移走了
+            currentSlot.RemoveCard();  // 只是移除引用，不锁定
+        }
+
+        // 标记卡牌为待移除状态
+        if (arrangement != null)
+        {
+            arrangement.MarkCardForRemoval(rectTransform);
         }
 
         canvasGroup.alpha = dragAlpha;
@@ -45,6 +52,7 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
         CurrentlyDraggedCard = this;
     }
+
     public void OnDrag(PointerEventData eventData)
     {
         // 直接跟随鼠标
@@ -85,29 +93,6 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
         CurrentlyDraggedCard = null;
     }
-    //public void OnEndDrag(PointerEventData eventData)
-    //{
-    //    canvasGroup.alpha = 1f;
-    //    canvasGroup.blocksRaycasts = true;
-
-    //    // 暂时注释掉区域检查，让任何地方都能放置
-
-    //    if (DropZoneManager.Instance != null && 
-    //        !DropZoneManager.Instance.IsInAnySlotZone(eventData.position))
-    //    {
-    //        ReturnToOriginalPosition();
-    //        return;
-    //    }
-
-
-    //    // 如果没有成功放置到具体卡槽，回到原位置
-    //    if (transform.parent == canvas.transform)
-    //    {
-    //        ReturnToOriginalPosition();
-    //    }
-
-    //    CurrentlyDraggedCard = null;
-    //}
 
     // 回到原容器并重新排列
     public void ReturnToOriginalContainer()
@@ -127,8 +112,15 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     }
 
     // 放置到新位置（用于后续的卡槽系统）
+    // 在 PlaceInNewSlot 方法中，确保当卡牌移动到新位置时从原排列系统中移除
     public void PlaceInNewSlot(Transform newParent, Vector2 newPosition)
     {
+        // 如果新父级不是原来的排列系统，需要从原排列系统中移除
+        if (arrangement != null && newParent != arrangement.transform)
+        {
+            arrangement.RemoveCard(rectTransform);
+        }
+
         transform.SetParent(newParent);
         rectTransform.anchoredPosition = newPosition;
 
@@ -143,13 +135,13 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             newArrangement.AddCard(rectTransform);
         }
     }
+
     public void ReturnToOriginalPosition()
     {
         transform.SetParent(originalParent);
         rectTransform.anchoredPosition = originalPosition;
 
         // 重新加入排列系统
-        CardArrangement arrangement = originalParent.GetComponent<CardArrangement>();
         if (arrangement != null)
         {
             arrangement.AddCard(rectTransform);

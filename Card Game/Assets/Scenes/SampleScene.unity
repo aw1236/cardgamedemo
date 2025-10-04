@@ -602,6 +602,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardContainer: {fileID: 1354060548}
   testCardCount: 4
+  _maxWaves: 10
+  checkInterval: 1
+  bossCard: {fileID: 0}
 --- !u!4 &179323916
 Transform:
   m_ObjectHideFlags: 0
@@ -2514,6 +2517,97 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!1 &1287801053
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1287801057}
+  - component: {fileID: 1287801056}
+  - component: {fileID: 1287801054}
+  - component: {fileID: 1287801055}
+  m_Layer: 5
+  m_Name: CraftingSlot2
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1287801054
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1287801053}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97873f0eea8d5d3489d52ed19eca2b77, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  slotType: 6
+  canAcceptAnyCard: 1
+  maxCards: 1
+--- !u!114 &1287801055
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1287801053}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.21960786, g: 0.21960786, b: 0.21960786, a: 0.38039216}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1287801056
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1287801053}
+  m_CullTransparentMesh: 1
+--- !u!224 &1287801057
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1287801053}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2032371618}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 138.399, y: -7.375}
+  m_SizeDelta: {x: -276.797, y: -54.473}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1293867185
 GameObject:
   m_ObjectHideFlags: 0
@@ -2658,6 +2752,7 @@ MonoBehaviour:
   cardSpacing: 220
   arrangementSpeed: 8
   autoArrange: 0
+  maxSlotCount: 4
 --- !u!1 &1386621931
 GameObject:
   m_ObjectHideFlags: 0
@@ -2830,8 +2925,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1484918040}
+  - component: {fileID: 1484918042}
+  - component: {fileID: 1484918043}
+  - component: {fileID: 1484918041}
   m_Layer: 5
-  m_Name: DragZone
+  m_Name: CraftingSlot1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2853,9 +2951,62 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 30, y: 30}
+  m_AnchoredPosition: {x: -142.329, y: -3}
+  m_SizeDelta: {x: -284.658, y: -54.473}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1484918041
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1484918039}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.21960786, g: 0.21960786, b: 0.21960786, a: 0.39215687}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1484918042
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1484918039}
+  m_CullTransparentMesh: 1
+--- !u!114 &1484918043
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1484918039}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97873f0eea8d5d3489d52ed19eca2b77, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  slotType: 6
+  canAcceptAnyCard: 1
+  maxCards: 1
 --- !u!1 &1496128778
 GameObject:
   m_ObjectHideFlags: 0
@@ -2919,6 +3070,53 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1505994589
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1505994591}
+  - component: {fileID: 1505994590}
+  m_Layer: 0
+  m_Name: FoodSystem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1505994590
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1505994589}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5042b3168a038084bb0926929983107d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  healEffectPrefab: {fileID: 0}
+  eatSound: {fileID: 0}
+  healTextColor: {r: 0, g: 1, b: 0, a: 1}
+--- !u!4 &1505994591
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1505994589}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 536.559, y: 399.00952, z: -1.7692972}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4344,7 +4542,6 @@ GameObject:
   - component: {fileID: 2032371618}
   - component: {fileID: 2032371621}
   - component: {fileID: 2032371620}
-  - component: {fileID: 2032371619}
   m_Layer: 5
   m_Name: CraftingZone
   m_TagString: Untagged
@@ -4366,26 +4563,14 @@ RectTransform:
   m_Children:
   - {fileID: 684351982}
   - {fileID: 1484918040}
+  - {fileID: 1287801057}
   m_Father: {fileID: 956248413}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -300, y: 0}
-  m_SizeDelta: {x: 500, y: 400}
+  m_AnchoredPosition: {x: -300, y: -29.215}
+  m_SizeDelta: {x: 500, y: 341.57}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &2032371619
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2032371617}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 89bedf53e0971a844ae9f65f3cdf6857, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  allowAnyCardCrafting: 1
 --- !u!114 &2032371620
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4864,6 +5049,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 04854667c2344724692f5a9e6684ba57, type: 2}
   - {fileID: 11400000, guid: 30d3169141d9c0c4cae81cc3f9f189be, type: 2}
   - {fileID: 11400000, guid: b3f6fa0a0746cca4984b13ba2a032271, type: 2}
+  craftingSlot1: {fileID: 1484918043}
+  craftingSlot2: {fileID: 1287801054}
 --- !u!4 &2109509266
 Transform:
   m_ObjectHideFlags: 0
@@ -4985,3 +5172,4 @@ SceneRoots:
   - {fileID: 1878312048}
   - {fileID: 2109509266}
   - {fileID: 966564160}
+  - {fileID: 1505994591}

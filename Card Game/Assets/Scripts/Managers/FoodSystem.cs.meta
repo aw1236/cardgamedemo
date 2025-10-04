@@ -1,11 +1,9 @@
 fileFormatVersion: 2
-guid: 1b4f3ab9a075dfa4f8accb2c90d85ecb
+guid: 5042b3168a038084bb0926929983107d
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences:
-  - cardContainer: {instanceID: 0}
-  - bossCard: {fileID: 11400000, guid: 157d4b9f24d54c945a55506201dc5f21, type: 2}
+  defaultReferences: []
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

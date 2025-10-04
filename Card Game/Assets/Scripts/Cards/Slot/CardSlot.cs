@@ -1,14 +1,15 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
+using System.Collections;
 
 public class CardSlot : MonoBehaviour, IDropHandler
 {
     [Header("卡槽设置")]
     public SlotType slotType;
     public bool canAcceptAnyCard = false;
-    public int maxCards = 1;  // ← 新增：最大卡牌数量
+    public int maxCards = 1;
 
-    public CardView CurrentCardView { get; protected set; }
+    public CardView CurrentCardView { get; set; } // 改为public set，方便CraftingManager设置
 
     // 检查卡槽是否已满
     public bool IsFull()
@@ -31,9 +32,9 @@ public class CardSlot : MonoBehaviour, IDropHandler
         switch (slotType)
         {
             case SlotType.Weapon:
-                return cardData is WeaponCardData;
+                return cardData.cardType == CardType.Weapon;
             case SlotType.Armor:
-                return cardData is ArmorCardData;
+                return cardData.cardType == CardType.Armor;
             case SlotType.MainCharacter:
                 return cardData.cardType == CardType.MainCharacter;
             case SlotType.Backpack:
@@ -42,6 +43,8 @@ public class CardSlot : MonoBehaviour, IDropHandler
             case SlotType.Destroy:
                 return true;
             case SlotType.Refresh:
+                return true;
+            case SlotType.Crafting:
                 return true;
             default:
                 return false;
@@ -60,6 +63,12 @@ public class CardSlot : MonoBehaviour, IDropHandler
             {
                 PlaceCard(draggedCard.transform, cardView);
                 Debug.Log($"卡牌放置到 {slotType} 槽位");
+
+                // 新增：如果是合成槽，通知合成管理器检查合成
+                if (slotType == SlotType.Crafting && CraftingManager.Instance != null)
+                {
+                    CraftingManager.Instance.CheckForCrafting(this);
+                }
             }
             else
             {
@@ -74,29 +83,23 @@ public class CardSlot : MonoBehaviour, IDropHandler
         // 移除当前卡牌（如果有）
         if (CurrentCardView != null)
         {
-            ForceRemoveCard();
+            RemoveCard();
         }
 
         RectTransform cardRect = cardTransform as RectTransform;
 
-        
-       
         // 记录原始尺寸
         Vector2 originalSize = cardRect.sizeDelta;
 
         // 放置新卡牌
         cardTransform.SetParent(transform);
 
-       
-
         cardTransform.localPosition = Vector3.zero;
         cardTransform.localScale = Vector3.one;
 
-      
-
         // 强制设置尺寸
         cardRect.sizeDelta = originalSize;
-       
+
         CurrentCardView = cardView;
 
         // 触发放置后的效果
@@ -106,10 +109,9 @@ public class CardSlot : MonoBehaviour, IDropHandler
         StartCoroutine(CheckFinalSize(cardRect));
     }
 
-    private System.Collections.IEnumerator CheckFinalSize(RectTransform cardRect)
+    private IEnumerator CheckFinalSize(RectTransform cardRect)
     {
         yield return new WaitForEndOfFrame();
-        
     }
 
     public virtual void RemoveCard()
@@ -117,22 +119,38 @@ public class CardSlot : MonoBehaviour, IDropHandler
         if (CurrentCardView != null)
         {
             OnCardRemoved(CurrentCardView);
-            CurrentCardView = null;  // ← 确保这里正确清除引用
+            CurrentCardView = null;
         }
     }
 
-    // 同时修改 ForceRemoveCard 方法
+    // 强制移除卡牌（返回原位置）
     public virtual void ForceRemoveCard()
     {
         if (CurrentCardView != null)
         {
-            // 回到原容器或销毁
+            // 回到原容器
             CardDragHandler dragHandler = CurrentCardView.GetComponent<CardDragHandler>();
             if (dragHandler != null)
             {
                 dragHandler.ReturnToOriginalPosition();
             }
-            RemoveCard();  // ← 这会调用上面的 RemoveCard 方法
+            RemoveCard();
+        }
+    }
+
+    // 新增：获取卡牌数据
+    public CardData GetCardData()
+    {
+        return CurrentCardView?.GetCardData();
+    }
+
+    // 新增：清空槽位（不返回原位置）
+    public void ClearSlot()
+    {
+        if (CurrentCardView != null)
+        {
+            Destroy(CurrentCardView.gameObject);
+            CurrentCardView = null;
         }
     }
 
@@ -145,7 +163,4 @@ public class CardSlot : MonoBehaviour, IDropHandler
     {
         Debug.Log($"卡牌 {cardView.GetCardData().cardName} 从 {slotType} 槽位移除");
     }
-
-    
-   
 }

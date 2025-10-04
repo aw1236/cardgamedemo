@@ -5,5 +5,6 @@ public enum SlotType
     MainCharacter,  // 主角槽
     Backpack,       // 背包槽
     Destroy,        // 销毁槽
-    Refresh         // 刷新槽
+    Refresh,         // 刷新槽
+    Crafting,          //合成槽
 }
