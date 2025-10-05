@@ -1,15 +1,15 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 [CreateAssetMenu(fileName = "New Armor", menuName = "Card Game/Armor Card")]
 public class ArmorCardData : CardData
 {
-    [Header("Armor Stats")]
-    //·ÀÓùÁ¦
-    public int defense = 1;
-    //ÄÍ¾Ã
-    public int durability = 5;
+    [Header("è£…å¤‡å±æ€§")]
+    public int  attack; // æ”»å‡»åŠ›
+    public int defense; // é˜²å¾¡åŠ›
+    public int durability; // å½“å‰è€ä¹…åº¦
+    public int maxDurability; // ğŸ¯ æ–°å¢ï¼šæœ€å¤§è€ä¹…åº¦
 
-    //±£Ö¤ÀàĞÍÖ»ÄÜÊÇArmor
+    //ä¿è¯ç±»å‹åªèƒ½æ˜¯Armor
     private void OnValidate()
     {
         cardType = CardType.Armor;

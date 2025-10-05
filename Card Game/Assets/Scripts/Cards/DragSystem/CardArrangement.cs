@@ -1,35 +1,51 @@
-using UnityEngine;
-using System.Collections.Generic;
 using System.Collections;
+using System.Collections.Generic;
+using Unity.Collections.LowLevel.Unsafe;
+using UnityEngine;
 
 public class CardArrangement : MonoBehaviour
 {
     [Header("排列设置")]
-    public float cardSpacing = 220f;      // 卡牌间距
-    public float arrangementSpeed = 8f;   // 排列动画速度
-    public bool autoArrange = false;      // 是否自动排列
-    [SerializeField] private int maxSlotCount = 4; // 卡牌槽位总数
+    public float cardSpacing = 220f;
+    public float arrangementSpeed = 8f;
+    public bool autoArrange = false;
+    [SerializeField] private int maxSlotCount = 4;
+
+    [Header("更新槽设置")]
+    public bool isUpdateSlot = false; // 新增：标记是否为更新槽
 
     private List<RectTransform> cards = new List<RectTransform>();
     private bool needsArrangement = false;
-    private List<Coroutine> activeCoroutines = new List<Coroutine>(); // 跟踪活跃的动画协程
-
-    // 新增：跟踪卡牌是否真正被移除（不仅仅是移动位置）
+    private List<Coroutine> activeCoroutines = new List<Coroutine>();
     private List<RectTransform> pendingRemovalCards = new List<RectTransform>();
 
-    // 添加卡牌到排列系统
+    // 添加卡牌到排列系统 - 修改这里
     public void AddCard(RectTransform card)
     {
         if (!cards.Contains(card))
         {
-            cards.Add(card);
-            needsArrangement = autoArrange;
+            // 如果是更新槽且已经有卡牌，拒绝添加（防止从外部拖入）
+            if (isUpdateSlot && cards.Count >= maxSlotCount)
+            {
+                Debug
+.LogWarning("更新槽已满，无法添加更多卡牌");
+                return;
+            }
 
-            // 如果卡牌在待移除列表中，则移除
-            pendingRemovalCards.Remove(card);
-
+            cards
+.Add(card);
+            needsArrangement
+= autoArrange;
+            pendingRemovalCards
+.Remove(card);
             RegisterCard(card);
         }
+    }
+
+    // 新增：检查更新槽是否可以接受卡牌
+    public bool CanAcceptCardToUpdateSlot()
+    {
+        return !isUpdateSlot || cards.Count < maxSlotCount;
     }
 
     // 从排列系统移除卡牌
@@ -255,7 +271,37 @@ public class CardArrangement : MonoBehaviour
         cards.Clear();
         pendingRemovalCards.Clear();
     }
+
+    /// <summary>
+    /// 获取更新槽中实际的卡牌数量
+    /// </summary>
+    public int GetActualCardCountInContainer()
+    {
+        // 清理无效引用
+        cards.RemoveAll(card => card == null || !card.gameObject.activeInHierarchy);
+
+        int count = 0;
+        foreach (RectTransform card in cards)
+        {
+            // 确保卡牌确实在当前容器中
+            if (card != null && card.parent == this.transform)
+            {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    /// <summary>
+    /// 检查容器是否真正为空
+    /// </summary>
+    public bool IsContainerActuallyEmpty()
+    {
+        return GetActualCardCountInContainer() == 0;
+    }
+
 }
+
 
 // 辅助类：处理卡牌生命周期事件
 public class CardLifecycleHandler : MonoBehaviour
@@ -266,4 +312,6 @@ public class CardLifecycleHandler : MonoBehaviour
     {
         OnCardDestroyed?.Invoke();
     }
+
+    
 }

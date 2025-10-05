@@ -1,22 +1,24 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class TestSceneManager : MonoBehaviour
 {
     [Header("测试参数")]
     public Transform cardContainer;
     public int testCardCount = 4;
-    [SerializeField] private int _maxWaves = 10; // 改为序列化字段
-    public float checkInterval = 1.0f; // 检查间隔
+    [SerializeField] private int _maxWaves = 10;
+
+    [Header("UI设置")]
+    public Button nextWaveButton;
 
     [Header("Boss卡设置")]
-    public CardData bossCard; // 拖入bearKing.asset到这里
+    public CardData bossCard;
 
     private CardArrangement arrangement;
     private int currentWave = 0;
-    private bool isChecking = false;
+    private bool waveInProgress = false;
 
-    // 添加属性以确保值正确
     public int maxWaves
     {
         get { return _maxWaves; }
@@ -25,150 +27,234 @@ public class TestSceneManager : MonoBehaviour
 
     private void Start()
     {
-        // 强制设置最大波数为10
         _maxWaves = 10;
         Debug.Log($"设置最大波数为: {_maxWaves}");
 
-        // 获取或添加卡牌排列组件
         arrangement = cardContainer.GetComponent<CardArrangement>();
         if (arrangement == null)
             arrangement = cardContainer.gameObject.AddComponent<CardArrangement>();
 
-        // 开始第一波卡牌
-        StartCoroutine(SetupTestScene());
+        // 标记为更新槽
+        arrangement.isUpdateSlot = true;
+
+        // 设置按钮事件
+        if (nextWaveButton != null)
+        {
+            nextWaveButton.onClick.AddListener(StartNextWave);
+        }
+
+        // 开始检查更新槽状态
+        StartCoroutine(CheckUpdateSlotStatus());
+
+        Debug.Log("等待更新槽清空后才能开始下一波...");
+    }
+
+    // 定期检查更新槽状态
+    private IEnumerator CheckUpdateSlotStatus()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(0.5f); // 每0.5秒检查一次
+
+            UpdateButtonState();
+        }
+    }
+
+    // 手动开始下一波
+    public void StartNextWave()
+    {
+        // 只有在更新槽为空且没有波次进行中且未达到最大波数时才能开始
+        if (IsUpdateSlotEmpty() && currentWave < _maxWaves && !waveInProgress)
+        {
+            StartCoroutine(SetupTestScene());
+        }
+        else
+        {
+            if (!IsUpdateSlotEmpty())
+            {
+                Debug.Log("更新槽还未清空，无法开始下一波");
+            }
+            else if (waveInProgress)
+            {
+                Debug.Log("波次正在进行中，请等待");
+            }
+            else if (currentWave >= _maxWaves)
+            {
+                Debug.Log("已达到最大波数");
+            }
+        }
     }
 
     private IEnumerator SetupTestScene()
     {
+        waveInProgress = true;
+        UpdateButtonState();
+
         yield return new WaitForSeconds(0.5f);
 
-        // 确保所有旧卡牌被清理
+        // 保存当前的自动排列设置并暂时禁用
+        bool wasAutoArrange = arrangement.autoArrange;
+        arrangement.autoArrange = false;
+
+        // 清理旧卡牌
         foreach (Transform child in cardContainer)
         {
             if (child != null)
                 Destroy(child.gameObject);
         }
 
-        // 清空排列系统
         arrangement.ClearAllCards();
-
-        // 等待一帧确保清理完成
         yield return null;
 
-        Debug.Log($"当前波数: {currentWave}, 最大波数: {_maxWaves}");
+        Debug.Log($"开始生成第 {currentWave + 1} 波测试卡牌...");
 
-        if (currentWave < _maxWaves)
+        bool isLastWave = (currentWave + 1 == _maxWaves);
+        bool hasBossCard = bossCard != null;
+
+        int cardsGenerated = 0;
+        for (int i = 0; i < testCardCount; i++)
         {
-            Debug.Log($"开始生成第 {currentWave + 1} 波测试卡牌...");
+            CardData cardToCreate;
 
-            // 检查是否是最后一波并且有boss卡
-            bool isLastWave = (currentWave + 1 == _maxWaves);
-            bool hasBossCard = bossCard != null;
-
-            for (int i = 0; i < testCardCount; i++)
+            if (isLastWave && hasBossCard && i == 0)
             {
-                CardData cardToCreate;
-
-                // 如果是最后一波、有boss卡，并且是第一张卡，则创建boss卡
-                if (isLastWave && hasBossCard && i == 0)
-                {
-                    cardToCreate = bossCard;
-                    Debug.Log("生成BOSS卡!");
-                }
-                else if (CardManager.Instance.allCards.Count > 0)
-                {
-                    cardToCreate = CardManager.Instance.GetRandomCard();
-                }
-                else
-                {
-                    // 如果没有可用卡牌，跳过
-                    continue;
-                }
-
-                GameObject cardObject = CardManager.Instance.CreateCard(cardToCreate, cardContainer);
-
-                // 将卡牌添加到排列系统
-                RectTransform cardRT = cardObject.GetComponent<RectTransform>();
-                arrangement.AddCard(cardRT);
-
-                yield return new WaitForSeconds(0.1f);
+                cardToCreate = bossCard;
+                Debug.Log("生成BOSS卡!");
             }
-
-            // 立即排列卡牌
-            arrangement.ArrangeCardsImmediately();
-
-            currentWave++;
-            Debug.Log($"完成了第 {currentWave} 波，共 {testCardCount} 张测试卡牌");
-
-            // 开始检查是否刷新下一波
-            if (currentWave < _maxWaves)
+            else if (CardManager.Instance != null && CardManager.Instance.allCards.Count > 0)
             {
-                StartCoroutine(CheckForNextWave());
+                cardToCreate = CardManager.Instance.GetRandomCard();
             }
             else
             {
-                Debug.Log($"已达到最大波数上限: {_maxWaves}");
+                continue;
             }
-        }
-    }
 
-    private IEnumerator CheckForNextWave()
-    {
-        if (isChecking) yield break;
-
-        isChecking = true;
-        Debug.Log("开始监测卡牌槽状态...");
-
-        while (currentWave < _maxWaves)
-        {
-            yield return new WaitForSeconds(checkInterval);
-
-            if (AreAllSlotsEmpty())
+            GameObject cardObject = CardManager.Instance.CreateCard(cardToCreate, cardContainer);
+            if (cardObject != null)
             {
-                Debug.Log("所有卡牌槽为空，开始下一波刷新");
-                StartCoroutine(SetupTestScene());
-                break;
+                RectTransform cardRT = cardObject.GetComponent<RectTransform>();
+                arrangement.AddCard(cardRT);
+                cardsGenerated++;
             }
+
+            yield return new WaitForSeconds(0.1f);
         }
 
-        isChecking = false;
+        // 所有卡牌生成完成后，一次性排列
+        arrangement.ArrangeCardsImmediately();
+
+        // 恢复原来的自动排列设置
+        arrangement.autoArrange = wasAutoArrange;
+
+        currentWave++;
+
+        Debug.Log($"完成了第 {currentWave} 波，生成了 {cardsGenerated} 张测试卡牌");
+
+        waveInProgress = false;
+        UpdateButtonState();
+
+        if (currentWave >= _maxWaves)
+        {
+            Debug.Log($"已达到最大波数上限: {_maxWaves}");
+        }
     }
 
-    private bool AreAllSlotsEmpty()
+    // 检查更新槽是否为空
+    private bool IsUpdateSlotEmpty()
     {
         if (arrangement != null)
         {
-            return arrangement.IsContainerEmpty();
+            return arrangement.IsContainerActuallyEmpty(); // 使用新的更准确的方法
         }
 
+        // 备用检查方法
         return cardContainer.childCount == 0;
     }
 
-    // 可选：手动触发下一波刷新（用于调试）
-    [ContextMenu("手动触发下一波")]
-    public void ManualTriggerNextWave()
+    // 更新按钮状态
+    private void UpdateButtonState()
     {
-        if (currentWave < _maxWaves && !isChecking)
+        if (nextWaveButton != null)
         {
-            StartCoroutine(SetupTestScene());
+            bool isSlotEmpty = IsUpdateSlotEmpty();
+            bool canStartNextWave = isSlotEmpty && currentWave < _maxWaves && !waveInProgress;
+
+            nextWaveButton.interactable = canStartNextWave;
+
+            // 更新按钮文本
+            Text buttonText = nextWaveButton.GetComponentInChildren<Text>();
+            if (buttonText != null)
+            {
+                if (waveInProgress)
+                {
+                    buttonText.text = "生成中...";
+                }
+                else if (!isSlotEmpty)
+                {
+                    buttonText.text = "清空更新槽";
+                    // 可以添加提示颜色
+                    buttonText.color = Color.gray;
+                }
+                else if (currentWave < _maxWaves)
+                {
+                    buttonText.text = $"下一波 ({currentWave + 1}/{_maxWaves})";
+                    buttonText.color = Color.white;
+                }
+                else
+                {
+                    buttonText.text = "已完成";
+                    buttonText.color = Color.gray;
+                }
+            }
+
+            // 添加提示文本
+            if (!isSlotEmpty && !waveInProgress)
+            {
+                int remainingCards = arrangement.GetCardsInContainerCount();
+                Debug.Log($"更新槽中还有 {remainingCards} 张卡牌，请清空后再开始下一波");
+            }
         }
     }
 
-    // 可选：重置波数计数
+    [ContextMenu("手动触发下一波")]
+    public void ManualTriggerNextWave()
+    {
+        StartNextWave();
+    }
+
     [ContextMenu("重置波数")]
     public void ResetWaves()
     {
         currentWave = 0;
-        isChecking = false;
+        waveInProgress = false;
         StopAllCoroutines();
+
+        // 清理所有卡牌
+        foreach (Transform child in cardContainer)
+        {
+            if (child != null)
+                Destroy(child.gameObject);
+        }
+        arrangement.ClearAllCards();
+
+        // 重新开始状态检查
+        StartCoroutine(CheckUpdateSlotStatus());
+
+        UpdateButtonState();
         Debug.Log("波数计数器已重置");
     }
 
-    // 添加一个方法来强制设置波数
     [ContextMenu("强制设置波数为10")]
     public void ForceSetWavesTo10()
     {
         _maxWaves = 10;
         Debug.Log($"已强制设置最大波数为: {_maxWaves}");
+        UpdateButtonState();
+    }
+
+    private void OnDestroy()
+    {
+        StopAllCoroutines();
     }
 }

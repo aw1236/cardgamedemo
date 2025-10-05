@@ -28,8 +28,7 @@ public class CombatManager : MonoBehaviour
     /// <summary>
     /// 执行战斗逻辑
     /// </summary>
-    public void PerformCombat(MonsterCardData monster, MainCharacterCardData mainChar,
-                         WeaponCardData weapon, ArmorCardData armor)
+    public void PerformCombat(MonsterCardData monster, MainCharacterCardData mainChar, GameObject monsterObject = null, MonsterHealthController healthController = null)
     {
         Debug.Log("🔍 CombatManager.PerformCombat 被调用！");
 
@@ -45,13 +44,29 @@ public class CombatManager : MonoBehaviour
             return;
         }
 
+        // 🎯 获取怪物当前血量
+        int monsterCurrentHealth;
+        if (healthController != null)
+        {
+            monsterCurrentHealth = healthController.GetCurrentHealth();
+        }
+        else
+        {
+            // 备用方案：使用怪物数据的基础血量
+            monsterCurrentHealth = monster.health;
+        }
+
         Debug.Log($"✅ 参数检查通过");
-        Debug.Log($"📊 怪物: {monster.cardName} (HP:{monster.health}, ATK:{monster.attack})");
+        Debug.Log($"📊 怪物: {monster.cardName} (HP:{monsterCurrentHealth}, ATK:{monster.attack})");
         Debug.Log($"📊 主角: {mainChar.cardName} (HP:{mainChar.health})");
+
+        // 在 PerformCombat 方法中，确保使用主角数据中的装备
+        WeaponCardData currentWeapon = mainChar.equippedWeapon;
+        ArmorCardData currentArmor = mainChar.equippedArmor;
 
         // 计算伤害
         int monsterAttack = monster.attack;
-        int characterDefense = armor != null ? armor.defense : 0;
+        int characterDefense = currentArmor != null ? currentArmor.defense : 0;
         int actualDamage = Mathf.Max(monsterAttack - characterDefense, 1);
 
         Debug.Log($"🎯 伤害计算: 怪物攻击{monsterAttack} - 主角防御{characterDefense} = 实际伤害{actualDamage}");
@@ -64,32 +79,58 @@ public class CombatManager : MonoBehaviour
         Debug.Log($"❤️ 主角血量: {previousHealth} -> {mainChar.health}");
 
         // 消耗装备耐久
-        if (weapon != null)
+        if (currentWeapon != null)
         {
-            weapon.durability--;
-            weapon.durability = Mathf.Max(weapon.durability, 0);
-            Debug.Log($"⚔️ 武器耐久: {weapon.durability + 1} -> {weapon.durability}");
+            int previousDurability = currentWeapon.durability;
+            currentWeapon.durability--;
+            currentWeapon.durability = Mathf.Max(currentWeapon.durability, 0);
+            Debug.Log($"⚔️ 武器耐久: {previousDurability} -> {currentWeapon.durability}");
+
+            // 🎯 检查武器是否损坏
+            if (currentWeapon.durability <= 0)
+            {
+                Debug.Log($"💥 武器 {currentWeapon.cardName} 已损坏！");
+                OnWeaponBreak(currentWeapon);
+                // 🎯 立即销毁，避免重复使用
+                DestroyWeaponCardInSlot(currentWeapon);
+            }
         }
 
-        if (armor != null)
+        if (currentArmor != null)
         {
-            armor.durability--;
-            armor.durability = Mathf.Max(armor.durability, 0);
-            Debug.Log($"🛡️ 盔甲耐久: {armor.durability + 1} -> {armor.durability}");
+            int previousDurability = currentArmor.durability;
+            currentArmor.durability--;
+            currentArmor.durability = Mathf.Max(currentArmor.durability, 0);
+            Debug.Log($"🛡️ 盔甲耐久: {previousDurability} -> {currentArmor.durability}");
+
+            // 🎯 检查盔甲是否损坏
+            if (currentArmor.durability <= 0)
+            {
+                Debug.Log($"💥 盔甲 {currentArmor.cardName} 已损坏！");
+                OnArmorBreak(currentArmor);
+                // 🎯 立即销毁，避免重复使用
+                DestroyArmorCardInSlot(currentArmor);
+            }
         }
 
         // 怪物承受主角攻击
-        int characterAttack = weapon != null ? weapon.attack : mainChar.baseAttack;
-        int previousMonsterHealth = monster.health;
-        monster.health -= characterAttack;
-        monster.health = Mathf.Max(monster.health, 0);
+        int characterAttack = currentWeapon != null ? currentWeapon.attack : mainChar.baseAttack;
+        int previousMonsterHealth = monsterCurrentHealth;
+        int newMonsterHealth = previousMonsterHealth - characterAttack;
+        newMonsterHealth = Mathf.Max(newMonsterHealth, 0);
 
-        Debug.Log($"🐺 怪物血量: {previousMonsterHealth} -> {monster.health} (受到{characterAttack}伤害)");
+        // 🎯 设置怪物新血量
+        if (healthController != null)
+        {
+            healthController.SetHealth(newMonsterHealth);
+        }
+
+        Debug.Log($"🐺 怪物血量: {previousMonsterHealth} -> {newMonsterHealth} (受到{characterAttack}伤害)");
 
         Debug.Log("✅ 战斗计算完成！");
 
-        // 检查装备损坏
-        CheckEquipmentBreak(weapon, armor);
+        // 播放战斗效果
+        PlayCombatEffects();
 
         // 更新UI
         UpdateCombatUI(mainChar, actualDamage);
@@ -117,27 +158,6 @@ public class CombatManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 检查装备是否损坏
-    /// </summary>
-    private void CheckEquipmentBreak(WeaponCardData weapon, ArmorCardData armor)
-    {
-        if (weapon != null && weapon.durability <= 0)
-        {
-            Debug.Log($"?? 武器 {weapon.cardName} 已损坏！");
-            // 触发武器损坏事件
-            OnWeaponBreak(weapon);
-        }
-
-        if (armor != null && armor.durability <= 0)
-        {
-            Debug.Log($"?? 盔甲 {armor.cardName} 已损坏！");
-            // 触发盔甲损坏事件
-            OnArmorBreak(armor);
-        }
-    }
-
-
-    /// <summary>
     /// 武器损坏处理
     /// </summary>
     private void OnWeaponBreak(WeaponCardData weapon)
@@ -151,8 +171,12 @@ public class CombatManager : MonoBehaviour
                 mainCharSlot.mainCharacterData.equippedWeapon = null;
                 Debug.Log("已自动卸下损坏的武器");
 
+                // 🎯 新增：查找并销毁武器槽中的卡牌
+                DestroyWeaponCardInSlot(weapon);
+
                 // 更新显示
                 mainCharSlot.UpdateMainCharacterDisplay();
+                mainCharSlot.AddCombatLog($"💥 {weapon.cardName} 已损坏！");
             }
         }
     }
@@ -171,8 +195,56 @@ public class CombatManager : MonoBehaviour
                 mainCharSlot.mainCharacterData.equippedArmor = null;
                 Debug.Log("已自动卸下损坏的盔甲");
 
+                // 🎯 新增：查找并销毁盔甲槽中的卡牌
+                DestroyArmorCardInSlot(armor);
+
                 // 更新显示
                 mainCharSlot.UpdateMainCharacterDisplay();
+                mainCharSlot.AddCombatLog($"💥 {armor.cardName} 已损坏！");
+            }
+        }
+    }
+
+    /// <summary>
+    /// 🎯 新增：销毁武器槽中的卡牌
+    /// </summary>
+    private void DestroyWeaponCardInSlot(WeaponCardData weaponData)
+    {
+        // 查找所有装备槽
+        EquipmentSlot[] equipmentSlots = FindObjectsOfType<EquipmentSlot>();
+        foreach (EquipmentSlot slot in equipmentSlots)
+        {
+            if (slot.equipmentType == EquipmentType.Weapon && slot.CurrentCardView != null)
+            {
+                CardData slotCardData = slot.CurrentCardView.GetCardData();
+                if (slotCardData == weaponData) // 引用比较
+                {
+                    Debug.Log($"🗑️ 销毁损坏的武器卡牌: {weaponData.cardName}");
+                    slot.ForceRemoveAndDestroy(); // 调用新增的销毁方法
+                    break;
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// 🎯 新增：销毁盔甲槽中的卡牌
+    /// </summary>
+    private void DestroyArmorCardInSlot(ArmorCardData armorData)
+    {
+        // 查找所有装备槽
+        EquipmentSlot[] equipmentSlots = FindObjectsOfType<EquipmentSlot>();
+        foreach (EquipmentSlot slot in equipmentSlots)
+        {
+            if (slot.equipmentType == EquipmentType.Armor && slot.CurrentCardView != null)
+            {
+                CardData slotCardData = slot.CurrentCardView.GetCardData();
+                if (slotCardData == armorData) // 引用比较
+                {
+                    Debug.Log($"🗑️ 销毁损坏的盔甲卡牌: {armorData.cardName}");
+                    slot.ForceRemoveAndDestroy(); // 调用新增的销毁方法
+                    break;
+                }
             }
         }
     }
@@ -199,7 +271,7 @@ public class CombatManager : MonoBehaviour
     {
         if (mainChar.health <= 0)
         {
-            Debug.Log("?? 游戏结束！主角死亡");
+            Debug.Log("🎮 游戏结束！主角死亡");
             ShowGameOver();
         }
     }
@@ -215,7 +287,7 @@ public class CombatManager : MonoBehaviour
         // 在实际项目中，这里会显示UI界面
 
         // 临时解决方案：在Console显示信息并重启游戏
-        Debug.Log("?? 游戏结束！3秒后重新开始...");
+        Debug.Log("🎮 游戏结束！3秒后重新开始...");
 
         // 延迟后重启场景
         Invoke("RestartGame", gameOverRestartDelay);
@@ -228,20 +300,6 @@ public class CombatManager : MonoBehaviour
     {
         Debug.Log("重新开始游戏...");
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-    }
-
-    /// <summary>
-    /// 检查怪物死亡
-    /// </summary>
-    private void CheckMonsterDeath(MonsterCardData monster)
-    {
-        if (monster.health <= 0)
-        {
-            Debug.Log($"?? 怪物 {monster.cardName} 被击败！");
-
-            // 这里可以添加怪物死亡后的逻辑
-            // 比如：增加分数、掉落物品等
-        }
     }
 
     /// <summary>
@@ -302,5 +360,3 @@ public class CombatManager : MonoBehaviour
         Debug.Log("战斗管理器已重置");
     }
 }
-
-

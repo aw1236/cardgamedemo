@@ -18,4 +18,6 @@ MonoBehaviour:
   description: It's wooden axe.
   backgroundColor: {r: 1, g: 0.514151, b: 0.514151, a: 1}
   attack: 2
+  defense: 0
   durability: 4
+  maxDurability: 4

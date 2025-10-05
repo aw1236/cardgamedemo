@@ -17,5 +17,5 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: dd5ab83baa480ea44b966d7ca90d09bc, type: 3}
   description: It's Wild Wolf
   backgroundColor: {r: 1, g: 1, b: 1, a: 1}
+  health: 1
   attack: 2
-  health: 2

@@ -18,4 +18,6 @@ MonoBehaviour:
   description: It's torch.
   backgroundColor: {r: 1, g: 1, b: 1, a: 1}
   attack: 2
+  defense: 0
   durability: 2
+  maxDurability: 2

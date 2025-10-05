@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
@@ -19,17 +19,26 @@ public class CardView : MonoBehaviour
         UpdateView();
     }
 
+    /// <summary>
+    /// ğŸ¯ è®¾ç½®å¡ç‰Œæ•°æ®ï¼ˆç”¨äºè¿è¡Œæ—¶æ•°æ®æ›¿æ¢ï¼‰
+    /// </summary>
+    public void SetCardData(CardData newData)
+    {
+        _cardData = newData;
+        UpdateView(); // æ›´æ–°æ˜¾ç¤º
+    }
+
     private void UpdateView()
     {
         if (_cardData == null) return;
 
-        // »ù´¡ĞÅÏ¢
+        // åŸºæœ¬è®¾ç½®
         cardBackground.color = _cardData.backgroundColor;
         iconImage.sprite = _cardData.icon;
         nameText.text = _cardData.cardName;
         descriptionText.text = _cardData.description;
 
-        // ¸ù¾İ¿¨ÅÆÀàĞÍÏÔÊ¾²»Í¬ÊôĞÔ
+        // æ ¹æ®å¡ç‰Œç±»å‹æ˜¾ç¤ºå±æ€§
         statsText.text = GetStatsText();
     }
 

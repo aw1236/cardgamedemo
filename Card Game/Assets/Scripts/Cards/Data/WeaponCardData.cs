@@ -1,17 +1,19 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 [CreateAssetMenu(fileName = "New Weapon", menuName = "Card Game/Weapon Card")]
 public class WeaponCardData : CardData
 {
-    [Header("Weapon Stats")]
-    //¹¥»÷Á¦
-    public int attack = 1;
-    //ÄÍ¾Ã
-    public int durability = 5;
+    
 
-    //±£Ö¤ÀàĞÍÖ»ÄÜÊÇWeapon
+    //ä¿è¯ç±»å‹åªèƒ½æ˜¯Weapon
     private void OnValidate()
     {
         cardType = CardType.Weapon;
     }
+
+    [Header("è£…å¤‡å±æ€§")]
+    public  int attack; // æ”»å‡»åŠ›
+    public  int defense; // é˜²å¾¡åŠ›
+    public  int durability; // å½“å‰è€ä¹…åº¦
+    public  int maxDurability; // ğŸ¯ æ–°å¢ï¼šæœ€å¤§è€ä¹…åº¦
 }

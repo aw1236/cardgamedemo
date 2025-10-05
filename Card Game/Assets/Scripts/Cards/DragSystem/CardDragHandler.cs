@@ -13,6 +13,9 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     private Transform originalParent;
     private CardArrangement arrangement;
 
+    // 新增：公开OriginalParent属性，方便CardSlot访问
+    public Transform OriginalParent { get; set; }
+
     public static CardDragHandler CurrentlyDraggedCard { get; private set; }
 
     private void Awake()
@@ -25,21 +28,27 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             canvasGroup = gameObject.AddComponent<CanvasGroup>();
     }
 
-    // 在 OnBeginDrag 方法中，移除任何锁定相关的代码
     public void OnBeginDrag(PointerEventData eventData)
     {
+        // 检查是否从更新槽拖出，如果是则允许拖出但不能拖入其他卡牌到更新槽
+        CardArrangement sourceArrangement = GetComponentInParent<CardArrangement>();
+        if (sourceArrangement != null && sourceArrangement.isUpdateSlot)
+        {
+            Debug.Log("从更新槽拖出卡牌");
+        }
+
         originalPosition = rectTransform.anchoredPosition;
         originalParent = transform.parent;
+        OriginalParent = originalParent; // 设置公开属性
 
-        // 重要：如果从卡槽中拖出，通知卡槽移除引用
         CardSlot currentSlot = originalParent.GetComponent<CardSlot>();
         if (currentSlot != null)
         {
             Debug.Log($"从卡槽 {currentSlot.slotType} 中拖出卡牌");
-            currentSlot.RemoveCard();  // 只是移除引用，不锁定
+            // 修复：使用SafeRemoveCard而不是RemoveCard，避免父子关系混乱
+            currentSlot.SafeRemoveCard();
         }
 
-        // 标记卡牌为待移除状态
         if (arrangement != null)
         {
             arrangement.MarkCardForRemoval(rectTransform);
@@ -47,15 +56,12 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
         canvasGroup.alpha = dragAlpha;
         canvasGroup.blocksRaycasts = false;
-
         transform.SetParent(canvas.transform);
-
         CurrentlyDraggedCard = this;
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-        // 直接跟随鼠标
         Vector2 localPoint;
         if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
             canvas.transform as RectTransform,
@@ -72,50 +78,105 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         canvasGroup.alpha = 1f;
         canvasGroup.blocksRaycasts = true;
 
-        // 检查是否在卡槽区域内
-        bool shouldReturn = false;
+        // 检查放置目标
+        CardSlot targetSlot = null;
+        CardArrangement targetArrangement = null;
 
-        if (DropZoneManager.Instance != null)
+        // 检查是否放置在了卡槽上
+        if (eventData.pointerEnter != null)
         {
-            if (!DropZoneManager.Instance.IsInAnySlotZone(eventData.position))
+            targetSlot = eventData.pointerEnter.GetComponent<CardSlot>();
+            targetArrangement = eventData.pointerEnter.GetComponent<CardArrangement>();
+
+            // 如果目标有父级，也检查父级（处理嵌套情况）
+            if (targetSlot == null && eventData.pointerEnter.transform.parent != null)
             {
-                // 不在任何卡槽区域内
-                shouldReturn = true;
-                Debug.Log("卡牌没有放置在卡槽区域，已返回原位置");
+                targetSlot = eventData.pointerEnter.transform.parent.GetComponent<CardSlot>();
+            }
+            if (targetArrangement == null && eventData.pointerEnter.transform.parent != null)
+            {
+                targetArrangement = eventData.pointerEnter.transform.parent.GetComponent<CardArrangement>();
             }
         }
 
-        // 没有成功放置到具体卡槽，或者不在卡槽区域内
-        if (shouldReturn || transform.parent == canvas.transform)
+        bool shouldReturn = false;
+
+        // 重要：如果目标是更新槽，拒绝放置并弹回
+        if (targetArrangement != null && targetArrangement.isUpdateSlot)
         {
+            Debug.Log("无法将卡牌放置到更新槽中");
+            shouldReturn = true;
+        }
+        // 如果目标卡槽是更新槽类型，也拒绝
+        else if (targetSlot != null)
+        {
+            // 检查目标卡槽是否是更新槽的一部分
+            CardArrangement slotArrangement = targetSlot.GetComponentInParent<CardArrangement>();
+            if (slotArrangement != null && slotArrangement.isUpdateSlot)
+            {
+                Debug.Log("无法将卡牌放置到更新槽的卡槽中");
+                shouldReturn = true;
+            }
+        }
+        // 检查是否在卡槽区域内但没有有效目标
+        else if (DropZoneManager.Instance != null && !DropZoneManager.Instance.IsInAnySlotZone(eventData.position))
+        {
+            shouldReturn = true;
+            Debug.Log("卡牌没有放置在卡槽区域，已返回原位置");
+        }
+        // 没有成功放置到具体卡槽
+        else if (transform.parent == canvas.transform && targetSlot == null)
+        {
+            shouldReturn = true;
+        }
+
+        // 修复：确保卡牌最终有正确的父级
+        if (shouldReturn)
+        {
+            ReturnToOriginalPosition();
+        }
+        else if (targetSlot == null)
+        {
+            // 如果没有目标卡槽但也不应该返回，确保卡牌有父级
             ReturnToOriginalPosition();
         }
 
         CurrentlyDraggedCard = null;
     }
 
-    // 回到原容器并重新排列
     public void ReturnToOriginalContainer()
     {
-        transform.SetParent(originalParent);
+        // 修复：检查原始父级是否仍然有效
+        if (originalParent == null)
+        {
+            Debug.LogWarning("原始父级已销毁，无法返回容器");
+            return;
+        }
 
-        // 重新加入排列系统
+        transform.SetParent(originalParent);
         if (arrangement != null)
         {
             arrangement.AddCard(rectTransform);
         }
         else
         {
-            // 如果没有排列系统，回到原位置
             rectTransform.anchoredPosition = originalPosition;
+        }
+
+        // 修复：通知原始卡槽重新拥有这张卡牌
+        CardSlot originalSlot = originalParent.GetComponent<CardSlot>();
+        if (originalSlot != null)
+        {
+            CardView cardView = GetComponent<CardView>();
+            if (cardView != null)
+            {
+                originalSlot.CurrentCardView = cardView;
+            }
         }
     }
 
-    // 放置到新位置（用于后续的卡槽系统）
-    // 在 PlaceInNewSlot 方法中，确保当卡牌移动到新位置时从原排列系统中移除
     public void PlaceInNewSlot(Transform newParent, Vector2 newPosition)
     {
-        // 如果新父级不是原来的排列系统，需要从原排列系统中移除
         if (arrangement != null && newParent != arrangement.transform)
         {
             arrangement.RemoveCard(rectTransform);
@@ -123,12 +184,10 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
         transform.SetParent(newParent);
         rectTransform.anchoredPosition = newPosition;
-
-        // 更新原始位置
         originalParent = newParent;
+        OriginalParent = newParent; // 更新公开属性
         originalPosition = newPosition;
 
-        // 如果新父级有排列系统，加入它
         CardArrangement newArrangement = newParent.GetComponent<CardArrangement>();
         if (newArrangement != null)
         {
@@ -138,13 +197,55 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
     public void ReturnToOriginalPosition()
     {
+        // 修复：添加安全检查
+        if (originalParent == null)
+        {
+            Debug.LogWarning("原始父级已销毁，无法返回原位置");
+            // 如果没有原始父级，尝试找到合适的父级或销毁
+            if (canvas != null)
+            {
+                transform.SetParent(canvas.transform);
+            }
+            return;
+        }
+
         transform.SetParent(originalParent);
         rectTransform.anchoredPosition = originalPosition;
 
-        // 重新加入排列系统
         if (arrangement != null)
         {
             arrangement.AddCard(rectTransform);
+        }
+
+        // 修复：确保原始卡槽知道卡牌已返回
+        CardSlot originalSlot = originalParent.GetComponent<CardSlot>();
+        if (originalSlot != null)
+        {
+            CardView cardView = GetComponent<CardView>();
+            if (cardView != null && originalSlot.CurrentCardView == null)
+            {
+                originalSlot.CurrentCardView = cardView;
+            }
+        }
+    }
+
+    // 新增：强制返回原位置（用于异常情况）
+    public void ForceReturnToOriginal()
+    {
+        if (originalParent != null)
+        {
+            transform.SetParent(originalParent);
+            rectTransform.anchoredPosition = originalPosition;
+
+            CardSlot originalSlot = originalParent.GetComponent<CardSlot>();
+            if (originalSlot != null)
+            {
+                CardView cardView = GetComponent<CardView>();
+                if (cardView != null)
+                {
+                    originalSlot.CurrentCardView = cardView;
+                }
+            }
         }
     }
 }

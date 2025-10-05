@@ -4,6 +4,8 @@ using TMPro;
 
 public class MainCharacterSlot : MonoBehaviour, IDropHandler
 {
+    public static MainCharacterSlot Instance { get; private set; }
+
     [Header("主角设置")]
     public MainCharacterCardData mainCharacterData;
 
@@ -12,6 +14,19 @@ public class MainCharacterSlot : MonoBehaviour, IDropHandler
     public TextMeshProUGUI weaponStatusText;
     public TextMeshProUGUI armorStatusText;
     public TextMeshProUGUI combatLogText;
+
+    private void Awake()
+    {
+        // 设置单例
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
 
     private void Start()
     {
@@ -48,7 +63,7 @@ public class MainCharacterSlot : MonoBehaviour, IDropHandler
         if (combatLogText == null) combatLogText = GameObject.Find("CombatLog")?.GetComponent<TextMeshProUGUI>();
     }
 
-    // 核心：处理拖拽放置
+    // 核心：处理拖拽放置 - 只处理怪物和食物，不再处理装备
     public void OnDrop(PointerEventData eventData)
     {
         Debug.Log("🎯 MainCharacterSlot: 开始处理拖拽放置");
@@ -78,30 +93,20 @@ public class MainCharacterSlot : MonoBehaviour, IDropHandler
 
         Debug.Log($"🃏 处理卡牌: {cardData.cardName} (类型: {cardData.GetType()})");
 
-        // 根据卡牌类型处理
+        // 只处理怪物和食物，不再处理装备
         if (cardData is MonsterCardData monsterData)
         {
             Debug.Log($"⚔️ 触发战斗: {monsterData.cardName}");
             HandleMonsterDrop(monsterData, draggedObject);
         }
-        else if (cardData is WeaponCardData weaponData)
-        {
-            Debug.Log($"🛡️ 装备武器: {weaponData.cardName}");
-            HandleWeaponDrop(weaponData, draggedObject, cardView);
-        }
-        else if (cardData is ArmorCardData armorData)
-        {
-            Debug.Log($"🛡️ 装备盔甲: {armorData.cardName}");
-            HandleArmorDrop(armorData, draggedObject, cardView);
-        }
-        else if (cardData is FoodCardData foodData) // 新增：处理食物卡
+        else if (cardData is FoodCardData foodData)
         {
             Debug.Log($"🍎 使用食物: {foodData.cardName}");
             HandleFoodDrop(foodData, draggedObject, cardView);
         }
         else
         {
-            Debug.LogWarning($"不支持的卡牌类型: {cardData.cardType}");
+            Debug.LogWarning($"不支持的卡牌类型或请使用装备槽装备: {cardData.cardType}");
             if (dragHandler != null) dragHandler.ReturnToOriginalPosition();
         }
     }
@@ -116,17 +121,18 @@ public class MainCharacterSlot : MonoBehaviour, IDropHandler
 
         Debug.Log($"🏁 开始战斗: {monsterData.cardName} vs {mainCharacterData.cardName}");
 
-        // 获取当前装备
-        WeaponCardData weapon = mainCharacterData.equippedWeapon;
-        ArmorCardData armor = mainCharacterData.equippedArmor;
+        // 使用怪物对象上的组件来存储临时血量
+        MonsterHealthController healthController = monsterObject.GetComponent<MonsterHealthController>();
+        if (healthController == null)
+        {
+            healthController = monsterObject.AddComponent<MonsterHealthController>();
+        }
 
-        Debug.Log($"🛠️ 当前装备 - 武器: {(weapon != null ? weapon.cardName : "无")}, 盔甲: {(armor != null ? armor.cardName : "无")}");
+        // 初始化或获取怪物当前血量
+        int monsterCurrentHealth = healthController.InitializeOrGetHealth(monsterData.health);
 
-        // 记录战斗前状态
-        int playerHealthBefore = mainCharacterData.health;
-        int monsterHealthBefore = monsterData.health;
-
-        Debug.Log($"📊 战斗前状态 - 主角HP: {playerHealthBefore}, 怪物HP: {monsterHealthBefore}");
+        Debug.Log($"🛠️ 当前装备 - 武器: {(mainCharacterData.equippedWeapon != null ? mainCharacterData.equippedWeapon.cardName : "无")}, 盔甲: {(mainCharacterData.equippedArmor != null ? mainCharacterData.equippedArmor.cardName : "无")}");
+        Debug.Log($"📊 战斗前状态 - 主角HP: {mainCharacterData.health}, 怪物HP: {monsterCurrentHealth}");
 
         // 检查 CombatManager 实例
         if (CombatManager.Instance == null)
@@ -137,13 +143,15 @@ public class MainCharacterSlot : MonoBehaviour, IDropHandler
 
         Debug.Log("🔄 准备调用 CombatManager.PerformCombat...");
 
-        // 执行战斗
-        CombatManager.Instance.PerformCombat(monsterData, mainCharacterData, weapon, armor);
+        // 传递怪物对象引用和血量控制器
+        CombatManager.Instance.PerformCombat(monsterData, mainCharacterData, monsterObject, healthController);
 
         Debug.Log("✅ CombatManager.PerformCombat 调用完成");
 
-        // 检查战斗后状态
-        Debug.Log($"📊 战斗后状态 - 主角HP: {mainCharacterData.health}, 怪物HP: {monsterData.health}");
+        // 获取战斗后的怪物血量
+        int monsterHealthAfter = healthController.GetCurrentHealth();
+
+        Debug.Log($"📊 战斗后状态 - 主角HP: {mainCharacterData.health}, 怪物HP: {monsterHealthAfter}");
 
         // 更新显示
         UpdateMainCharacterDisplay();
@@ -152,7 +160,7 @@ public class MainCharacterSlot : MonoBehaviour, IDropHandler
         AddCombatLog($"与 {monsterData.cardName} 战斗");
 
         // 检查怪物死亡
-        if (monsterData.health <= 0)
+        if (monsterHealthAfter <= 0)
         {
             AddCombatLog($"🎯 击败了 {monsterData.cardName}！");
             Destroy(monsterObject);
@@ -160,8 +168,8 @@ public class MainCharacterSlot : MonoBehaviour, IDropHandler
         }
         else
         {
-            AddCombatLog($"{monsterData.cardName} 存活 (HP: {monsterData.health})");
-            Debug.Log($"🐺 怪物 {monsterData.cardName} 存活，血量: {monsterData.health}");
+            AddCombatLog($"{monsterData.cardName} 存活 (HP: {monsterHealthAfter})");
+            Debug.Log($"🐺 怪物 {monsterData.cardName} 存活，血量: {monsterHealthAfter}");
         }
 
         // 检查主角死亡
@@ -170,103 +178,6 @@ public class MainCharacterSlot : MonoBehaviour, IDropHandler
             AddCombatLog("💀 主角被击败！");
             Debug.Log("🎮 主角死亡！");
         }
-    }
-    private void HandleWeaponDrop(WeaponCardData weaponData, GameObject weaponObject, CardView cardView)
-    {
-        // 简单装备逻辑 - 直接装备
-        mainCharacterData.equippedWeapon = weaponData;
-
-        // 放置到槽位
-        weaponObject.transform.SetParent(transform);
-        weaponObject.transform.localPosition = Vector3.zero;
-        weaponObject.transform.localScale = Vector3.one;
-
-        AddCombatLog($"⚔️ 装备了 {weaponData.cardName}");
-        UpdateMainCharacterDisplay();
-
-        Debug.Log($"✅ 武器装备成功: {weaponData.cardName}");
-    }
-
-    private void HandleArmorDrop(ArmorCardData armorData, GameObject armorObject, CardView cardView)
-    {
-        // 简单装备逻辑 - 直接装备
-        mainCharacterData.equippedArmor = armorData;
-
-        // 放置到槽位
-        armorObject.transform.SetParent(transform);
-        armorObject.transform.localPosition = Vector3.zero;
-        armorObject.transform.localScale = Vector3.one;
-
-        AddCombatLog($"🛡️ 装备了 {armorData.cardName}");
-        UpdateMainCharacterDisplay();
-
-        Debug.Log($"✅ 盔甲装备成功: {armorData.cardName}");
-    }
-
-    public void UpdateMainCharacterDisplay()
-    {
-        if (mainCharacterData == null) return;
-
-        // 更新血量显示
-        if (healthText != null)
-        {
-            healthText.text = $"HP: {mainCharacterData.health}/{mainCharacterData.maxHealth}";
-
-            // 血量颜色
-            float healthPercent = (float)mainCharacterData.health / mainCharacterData.maxHealth;
-            if (healthPercent <= 0.3f) healthText.color = Color.red;
-            else if (healthPercent <= 0.6f) healthText.color = Color.yellow;
-            else healthText.color = Color.green;
-        }
-
-        // 更新武器状态
-        if (weaponStatusText != null)
-        {
-            if (mainCharacterData.equippedWeapon != null)
-            {
-                weaponStatusText.text = $"武器: {mainCharacterData.equippedWeapon.cardName}";
-                weaponStatusText.color = Color.white;
-            }
-            else
-            {
-                weaponStatusText.text = "武器: 无";
-                weaponStatusText.color = Color.gray;
-            }
-        }
-
-        // 更新盔甲状态
-        if (armorStatusText != null)
-        {
-            if (mainCharacterData.equippedArmor != null)
-            {
-                armorStatusText.text = $"盔甲: {mainCharacterData.equippedArmor.cardName}";
-                armorStatusText.color = Color.white;
-            }
-            else
-            {
-                armorStatusText.text = "盔甲: 无";
-                armorStatusText.color = Color.gray;
-            }
-        }
-
-        Debug.Log($"📱 UI更新完成 - 血量: {mainCharacterData.health}/{mainCharacterData.maxHealth}");
-    }
-
-    public void AddCombatLog(string logMessage)
-    {
-        if (combatLogText != null)
-        {
-            combatLogText.text = $"{logMessage}\n{combatLogText.text}";
-
-            // 限制行数
-            string[] lines = combatLogText.text.Split('\n');
-            if (lines.Length > 3)
-            {
-                combatLogText.text = string.Join("\n", lines, 0, 3);
-            }
-        }
-
-        Debug.Log($"📝 战斗日志: {logMessage}");
     }
 
     /// <summary>
@@ -320,6 +231,71 @@ public class MainCharacterSlot : MonoBehaviour, IDropHandler
             }
         }
     }
+
+    public void UpdateMainCharacterDisplay()
+    {
+        if (mainCharacterData == null) return;
+
+        // 更新血量显示
+        if (healthText != null)
+        {
+            healthText.text = $"HP: {mainCharacterData.health}/{mainCharacterData.maxHealth}";
+
+            // 血量颜色
+            float healthPercent = (float)mainCharacterData.health / mainCharacterData.maxHealth;
+            if (healthPercent <= 0.3f) healthText.color = Color.red;
+            else if (healthPercent <= 0.6f) healthText.color = Color.yellow;
+            else healthText.color = Color.green;
+        }
+
+        // 更新武器状态
+        if (weaponStatusText != null)
+        {
+            if (mainCharacterData.equippedWeapon != null)
+            {
+                int totalAttack = mainCharacterData.baseAttack + mainCharacterData.equippedWeapon.attack;
+                weaponStatusText.text = $"武器: {mainCharacterData.equippedWeapon.cardName} (攻击:{totalAttack}, 耐久:{mainCharacterData.equippedWeapon.durability})";
+                weaponStatusText.color = Color.white;
+            }
+            else
+            {
+                weaponStatusText.text = $"武器: 无 (攻击:{mainCharacterData.baseAttack})";
+                weaponStatusText.color = Color.gray;
+            }
+        }
+
+        // 更新盔甲状态
+        if (armorStatusText != null)
+        {
+            if (mainCharacterData.equippedArmor != null)
+            {
+                armorStatusText.text = $"盔甲: {mainCharacterData.equippedArmor.cardName} (防御:{mainCharacterData.equippedArmor.defense}, 耐久:{mainCharacterData.equippedArmor.durability})";
+                armorStatusText.color = Color.white;
+            }
+            else
+            {
+                armorStatusText.text = "盔甲: 无 (防御:0)";
+                armorStatusText.color = Color.gray;
+            }
+        }
+
+        Debug.Log($"📱 UI更新完成 - 血量: {mainCharacterData.health}/{mainCharacterData.maxHealth}");
+    }
+
+    public void AddCombatLog(string logMessage)
+    {
+        if (combatLogText != null)
+        {
+            combatLogText.text = $"{logMessage}\n{combatLogText.text}";
+
+            // 限制行数
+            string[] lines = combatLogText.text.Split('\n');
+            if (lines.Length > 3)
+            {
+                combatLogText.text = string.Join("\n", lines, 0, 3);
+            }
+        }
+
+        Debug.Log($"📝 战斗日志: {logMessage}");
+    }
 }
-
-

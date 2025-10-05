@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 [CreateAssetMenu(fileName = "New Card", menuName = "Card Game/Card Data")]
 public class CardData : ScriptableObject
@@ -11,4 +11,9 @@ public class CardData : ScriptableObject
 
     [Header("Visual")]
     public Color backgroundColor = Color.white;
+
+   
+
+
+
 }

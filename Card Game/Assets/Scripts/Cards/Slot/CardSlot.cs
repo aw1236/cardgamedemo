@@ -20,6 +20,14 @@ public class CardSlot : MonoBehaviour, IDropHandler
     // 检查是否可以接受卡牌
     public virtual bool CanAcceptCard(CardData cardData)
     {
+        // 新增：检查这个卡槽是否是更新槽的一部分
+        CardArrangement parentArrangement = GetComponentInParent<CardArrangement>();
+        if (parentArrangement != null && parentArrangement.isUpdateSlot)
+        {
+            Debug.Log($"更新槽不能接受外来卡牌");
+            return false;
+        }
+
         // 检查卡槽是否已满
         if (IsFull())
         {
@@ -162,5 +170,29 @@ public class CardSlot : MonoBehaviour, IDropHandler
     protected virtual void OnCardRemoved(CardView cardView)
     {
         Debug.Log($"卡牌 {cardView.GetCardData().cardName} 从 {slotType} 槽位移除");
+    }
+
+    // 在CardSlot类中添加这个方法
+    public void SafeRemoveCard()
+    {
+        if (CurrentCardView != null)
+        {
+            // 移除父子关系但保持引用
+            if (CurrentCardView.transform.parent == transform)
+            {
+                CurrentCardView.transform.SetParent(null);
+            }
+
+            // 清理CardDragHandler的引用
+            CardDragHandler dragHandler = CurrentCardView.GetComponent<CardDragHandler>();
+            if (dragHandler != null && dragHandler.OriginalParent == transform)
+            {
+                dragHandler.OriginalParent = null;
+            }
+
+            // 触发移除事件但不销毁卡牌
+            OnCardRemoved(CurrentCardView);
+            CurrentCardView = null;
+        }
     }
 }
