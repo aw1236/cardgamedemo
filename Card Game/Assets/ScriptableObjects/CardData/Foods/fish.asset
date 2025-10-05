@@ -18,3 +18,4 @@ MonoBehaviour:
   description: It's fish.
   backgroundColor: {r: 0.5566038, g: 0.29405484, b: 0.29405484, a: 1}
   healAmount: 2
+  useDescription: "\u6062\u590D {0} \u70B9\u751F\u547D\u503C"

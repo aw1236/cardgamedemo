@@ -19,5 +19,5 @@ MonoBehaviour:
   backgroundColor: {r: 0.5754717, g: 0.12486649, b: 0.4441237, a: 1}
   attack: 0
   defense: 1
-  durability: 2
-  maxDurability: 2
+  durability: 4
+  maxDurability: 4

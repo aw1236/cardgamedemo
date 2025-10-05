@@ -17,5 +17,5 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: 156f9a19ef4181a49aff23aa6981effe, type: 3}
   description: It's bear.
   backgroundColor: {r: 1, g: 0.6462264, b: 0.6462264, a: 1}
-  health: 2
+  health: 4
   attack: 1

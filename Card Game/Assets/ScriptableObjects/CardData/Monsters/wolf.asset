@@ -17,5 +17,5 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: 575f0768799e8504a929d65ae3bc2c28, type: 3}
   description: It's Wolf
   backgroundColor: {r: 0.5915361, g: 0.995283, b: 0.9548475, a: 1}
-  health: 2
+  health: 3
   attack: 2
