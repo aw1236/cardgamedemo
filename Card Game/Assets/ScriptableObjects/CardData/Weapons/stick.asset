@@ -17,7 +17,7 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: 84e82be6dba927947b3326e9a8bfcdd9, type: 3}
   description: It's stick.
   backgroundColor: {r: 0.9716981, g: 0.91675466, b: 0.56835175, a: 1}
-  cardBackgroundPrefab: {fileID: 6324586445724390090, guid: 676b870720d39db4e985499f994848fb, type: 3}
+  cardBackgroundPrefab: {fileID: 2238023044661848372, guid: 222ce5daff5e86145bee8b1abe145665, type: 3}
   attack: 2
   defense: 0
   durability: 2

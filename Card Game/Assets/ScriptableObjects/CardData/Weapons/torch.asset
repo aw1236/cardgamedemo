@@ -17,7 +17,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   description: It's torch.
   backgroundColor: {r: 1, g: 1, b: 1, a: 1}
-  cardBackgroundPrefab: {fileID: 6324586445724390090, guid: af91763dcaf54ca4aadfd8a082a7805b, type: 3}
+  cardBackgroundPrefab: {fileID: 2238023044661848372, guid: 7058cf09b5df8bc429bc1886906a7425, type: 3}
   attack: 3
   defense: 0
   durability: 3

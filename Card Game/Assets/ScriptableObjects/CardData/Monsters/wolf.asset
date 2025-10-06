@@ -17,6 +17,6 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: 575f0768799e8504a929d65ae3bc2c28, type: 3}
   description: It's Wolf
   backgroundColor: {r: 0.5915361, g: 0.995283, b: 0.9548475, a: 1}
-  cardBackgroundPrefab: {fileID: 6024559091147883398, guid: 0663e4445cdf53e4ba54ee8de0c88790, type: 3}
+  cardBackgroundPrefab: {fileID: 2238023044661848372, guid: 6587a1db928338241b4f8b0960b64e23, type: 3}
   health: 3
   attack: 2

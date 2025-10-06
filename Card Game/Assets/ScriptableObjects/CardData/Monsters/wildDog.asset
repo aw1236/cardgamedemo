@@ -17,6 +17,6 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: dd5ab83baa480ea44b966d7ca90d09bc, type: 3}
   description: It's Wild Dog.
   backgroundColor: {r: 1, g: 1, b: 1, a: 1}
-  cardBackgroundPrefab: {fileID: 6024559091147883398, guid: c6ed28ae73072b048b7535af0a5138d1, type: 3}
+  cardBackgroundPrefab: {fileID: 2238023044661848372, guid: 30ffc26fc2885264590af751b2ea5746, type: 3}
   health: 2
   attack: 2
