@@ -14,4 +14,13 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/team.unity
     guid: 02786737a01262243a840ae518afb629
+  - enabled: 1
+    path: Assets/Scenes/GameSceneSecond.unity
+    guid: 0cddf7536bd28cf49b080cdca1b7eca7
+  - enabled: 1
+    path: Assets/Scenes/new plot first.unity
+    guid: 989dc424d5410434b97a6b92db938bf1
+  - enabled: 1
+    path: Assets/Scenes/new plot second.unity
+    guid: f6e3ae3107e516a4a94b7c62fc06a25b
   m_configObjects: {}

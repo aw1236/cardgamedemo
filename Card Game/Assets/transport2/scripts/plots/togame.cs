@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class start : MonoBehaviour
+public class togame : MonoBehaviour
 {
-    public void Gamestart()
+    public void Togame()
     {
         StartCoroutine(LoadSceneWithDelay(0.5f));
     }
@@ -13,6 +13,6 @@ public class start : MonoBehaviour
     IEnumerator LoadSceneWithDelay(float delayTime)
     {
         yield return new WaitForSeconds(delayTime);
-        SceneManager.LoadScene(4);
+        SceneManager.LoadScene(1);
     }
 }

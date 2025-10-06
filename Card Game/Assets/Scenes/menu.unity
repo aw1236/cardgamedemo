@@ -938,18 +938,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &2608709682403868286
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4532802005822129156}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b86641e146603fe449aa8fb7ba5d3617, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &2982056423936557681
 GameObject:
   m_ObjectHideFlags: 0
@@ -1097,7 +1085,6 @@ GameObject:
   - component: {fileID: 6234288806645442969}
   - component: {fileID: 673541784702338618}
   - component: {fileID: 1068499405533267928}
-  - component: {fileID: 2608709682403868286}
   m_Layer: 5
   m_Name: team
   m_TagString: Untagged
@@ -1478,8 +1465,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\u5236\u4F5C\u56E2\u961F"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 28734ec9723547a458790b7a35855e77, type: 2}
-  m_sharedMaterial: {fileID: -2256212031254910629, guid: 28734ec9723547a458790b7a35855e77, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 39c6a27873469114bbcf4ffe67a6da31, type: 2}
+  m_sharedMaterial: {fileID: -2256212031254910629, guid: 39c6a27873469114bbcf4ffe67a6da31, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1842,8 +1829,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\u6D41\u843D\u8352\u5C9B\n\u9C81\u6EE8\u900A"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 28734ec9723547a458790b7a35855e77, type: 2}
-  m_sharedMaterial: {fileID: -2256212031254910629, guid: 28734ec9723547a458790b7a35855e77, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 39c6a27873469114bbcf4ffe67a6da31, type: 2}
+  m_sharedMaterial: {fileID: -2256212031254910629, guid: 39c6a27873469114bbcf4ffe67a6da31, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

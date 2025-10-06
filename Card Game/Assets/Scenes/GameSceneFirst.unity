@@ -3420,8 +3420,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\u6CE2\u6B21\uFF1A1/10"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 28734ec9723547a458790b7a35855e77, type: 2}
-  m_sharedMaterial: {fileID: -2256212031254910629, guid: 28734ec9723547a458790b7a35855e77, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 39c6a27873469114bbcf4ffe67a6da31, type: 2}
+  m_sharedMaterial: {fileID: -2256212031254910629, guid: 39c6a27873469114bbcf4ffe67a6da31, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -3445,7 +3445,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 49.6
+  m_fontSize: 50.15
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
