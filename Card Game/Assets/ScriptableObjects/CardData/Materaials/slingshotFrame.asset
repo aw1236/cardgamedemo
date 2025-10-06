@@ -17,4 +17,5 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: f904827dc13387a49989875f02dc6306, type: 3}
   description: It's slingshot frame
   backgroundColor: {r: 0.9245283, g: 0.07413671, b: 0.07413671, a: 1}
+  cardBackgroundPrefab: {fileID: 2238023044661848372, guid: 5fb79131e9d271849bc2a095dda59b9b, type: 3}
   isCraftingMaterial: 1

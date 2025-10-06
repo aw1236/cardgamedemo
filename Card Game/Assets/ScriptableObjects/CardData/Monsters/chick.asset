@@ -17,5 +17,6 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: ec02013256c3e0c40b06d46162f1108a, type: 3}
   description: It's chick.
   backgroundColor: {r: 0.7958995, g: 0.9622642, b: 0.5355999, a: 1}
+  cardBackgroundPrefab: {fileID: 6024559091147883398, guid: edbdb734020e4644b97d0cce68db826e, type: 3}
   health: 1
   attack: 1

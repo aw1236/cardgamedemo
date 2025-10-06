@@ -10,12 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b6312d7d533fd7f4098b15487436a2fe, type: 3}
-  m_Name: wildWolf
+  m_Name: wildDog
   m_EditorClassIdentifier: 
-  cardName: Wild Wolf
+  cardName: Wild Dog
   cardType: 0
   icon: {fileID: 21300000, guid: dd5ab83baa480ea44b966d7ca90d09bc, type: 3}
-  description: It's Wild Wolf
+  description: It's Wild Dog.
   backgroundColor: {r: 1, g: 1, b: 1, a: 1}
+  cardBackgroundPrefab: {fileID: 6024559091147883398, guid: c6ed28ae73072b048b7535af0a5138d1, type: 3}
   health: 2
   attack: 2

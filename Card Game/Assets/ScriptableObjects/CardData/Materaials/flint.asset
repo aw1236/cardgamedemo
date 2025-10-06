@@ -17,4 +17,5 @@ MonoBehaviour:
   icon: {fileID: 0}
   description: It's flint.
   backgroundColor: {r: 0.8726415, g: 0.8279132, b: 0.4322045, a: 1}
+  cardBackgroundPrefab: {fileID: 2238023044661848372, guid: 4fad7f85421397942bd5307bc4a02963, type: 3}
   isCraftingMaterial: 1

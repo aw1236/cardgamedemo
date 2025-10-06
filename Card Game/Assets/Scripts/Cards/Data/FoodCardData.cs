@@ -22,6 +22,6 @@ public class FoodCardData : CardData
         if (targetCharacter == null) return;
 
         CombatManager.Instance.HealMainCharacter(targetCharacter, healAmount);
-        Debug.Log($"?? 使用了 {cardName}，恢复了 {healAmount} 点生命值");
+        Debug.Log($"使用了 {cardName}，恢复了 {healAmount} 点生命值");
     }
 }

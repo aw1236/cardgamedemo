@@ -17,6 +17,7 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: 6e25e74d93f2a85458c20d2e7958b0a7, type: 3}
   description: It's wood armor
   backgroundColor: {r: 0.8522602, g: 0.5566038, b: 1, a: 1}
+  cardBackgroundPrefab: {fileID: 2238023044661848372, guid: cabe33241b4411449b4ab75db55d659c, type: 3}
   attack: 0
   defense: 1
   durability: 6

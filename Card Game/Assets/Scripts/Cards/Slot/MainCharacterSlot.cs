@@ -239,7 +239,7 @@ public class MainCharacterSlot : MonoBehaviour, IDropHandler
         // 更新血量显示
         if (healthText != null)
         {
-            healthText.text = $"HP: {mainCharacterData.health}/{mainCharacterData.maxHealth}";
+            healthText.text = $"血量: {mainCharacterData.health}/{mainCharacterData.maxHealth}";
 
             // 血量颜色
             float healthPercent = (float)mainCharacterData.health / mainCharacterData.maxHealth;
@@ -255,12 +255,12 @@ public class MainCharacterSlot : MonoBehaviour, IDropHandler
             {
                 int totalAttack = mainCharacterData.baseAttack + mainCharacterData.equippedWeapon.attack;
                 weaponStatusText.text = $"武器: {mainCharacterData.equippedWeapon.cardName} (攻击:{totalAttack}, 耐久:{mainCharacterData.equippedWeapon.durability})";
-                weaponStatusText.color = Color.white;
+                weaponStatusText.color = Color.red;
             }
             else
             {
                 weaponStatusText.text = $"武器: 无 (攻击:{mainCharacterData.baseAttack})";
-                weaponStatusText.color = Color.gray;
+                weaponStatusText.color = Color.white;
             }
         }
 
@@ -270,12 +270,12 @@ public class MainCharacterSlot : MonoBehaviour, IDropHandler
             if (mainCharacterData.equippedArmor != null)
             {
                 armorStatusText.text = $"盔甲: {mainCharacterData.equippedArmor.cardName} (防御:{mainCharacterData.equippedArmor.defense}, 耐久:{mainCharacterData.equippedArmor.durability})";
-                armorStatusText.color = Color.white;
+                armorStatusText.color = Color.blue;
             }
             else
             {
                 armorStatusText.text = "盔甲: 无 (防御:0)";
-                armorStatusText.color = Color.gray;
+                armorStatusText.color = Color.white;
             }
         }
 

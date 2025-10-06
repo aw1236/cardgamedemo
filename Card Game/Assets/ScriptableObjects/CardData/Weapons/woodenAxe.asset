@@ -17,6 +17,7 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: c33c6ae4ffbbdc8439f47c9811ec4064, type: 3}
   description: It's wooden axe.
   backgroundColor: {r: 1, g: 0.514151, b: 0.514151, a: 1}
+  cardBackgroundPrefab: {fileID: 6324586445724390090, guid: d0a40f19fca48b743af7f7756d799355, type: 3}
   attack: 3
   defense: 0
   durability: 4
