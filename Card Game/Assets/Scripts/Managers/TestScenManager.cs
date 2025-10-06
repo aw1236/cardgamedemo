@@ -16,7 +16,7 @@ public class TestSceneManager : MonoBehaviour
     public CardData bossCard;
 
     private CardArrangement arrangement;
-    private int currentWave = 0;
+    public int currentWave = 0;
     private bool waveInProgress = false;
 
     public int maxWaves
@@ -47,6 +47,26 @@ public class TestSceneManager : MonoBehaviour
         StartCoroutine(CheckUpdateSlotStatus());
 
         Debug.Log("等待更新槽清空后才能开始下一波...");
+
+        // 新增：自动开始第一波
+        StartCoroutine(AutoStartFirstWave());
+    }
+
+    // 新增：自动开始第一波的协程
+    private IEnumerator AutoStartFirstWave()
+    {
+        // 等待一帧确保所有组件初始化完成
+        yield return new WaitForEndOfFrame();
+
+        // 检查是否应该自动开始第一波
+        var configManager = WaveConfigManager.Instance;
+        bool shouldAutoStart = configManager == null || configManager.autoStartFirstWave;
+
+        if (shouldAutoStart && currentWave == 0 && IsUpdateSlotEmpty() && !waveInProgress)
+        {
+            Debug.Log("自动开始第一波...");
+            StartNextWave();
+        }
     }
 
     // 定期检查更新槽状态
@@ -108,19 +128,53 @@ public class TestSceneManager : MonoBehaviour
 
         Debug.Log($"开始生成第 {currentWave + 1} 波测试卡牌...");
 
+        // 新增：获取波次配置
+        WaveConfig currentConfig = null;
+        var configManager = WaveConfigManager.Instance;
+        if (configManager != null && configManager.HasWaveConfig(currentWave + 1))
+        {
+            currentConfig = configManager.GetWaveConfig(currentWave + 1);
+            Debug.Log($"使用波次 {currentWave + 1} 的配置");
+        }
+
+        // 确定要生成的卡牌数量和类型
+        int cardsToGenerate = currentConfig != null ? currentConfig.cardCount : testCardCount;
         bool isLastWave = (currentWave + 1 == _maxWaves);
         bool hasBossCard = bossCard != null;
 
-        int cardsGenerated = 0;
-        for (int i = 0; i < testCardCount; i++)
-        {
-            CardData cardToCreate;
+        // 新增：检查配置中的BOSS卡
+        bool spawnBossThisWave = currentConfig != null ? currentConfig.spawnBossThisWave : false;
+        CardData bossCardToUse = currentConfig != null && currentConfig.bossCard != null ? currentConfig.bossCard : bossCard;
 
-            if (isLastWave && hasBossCard && i == 0)
+        int cardsGenerated = 0;
+        for (int i = 0; i < cardsToGenerate; i++)
+        {
+            CardData cardToCreate = null;
+
+            // 优先使用配置中的特定卡牌
+            if (currentConfig != null && currentConfig.specificCards.Count > i)
             {
-                cardToCreate = bossCard;
+                cardToCreate = currentConfig.specificCards[i];
+                Debug.Log($"使用配置的特定卡牌: {cardToCreate.cardName}");
+            }
+            // 然后是BOSS卡逻辑
+            else if ((isLastWave && hasBossCard && i == 0) || (spawnBossThisWave && i == 0 && bossCardToUse != null))
+            {
+                cardToCreate = bossCardToUse;
                 Debug.Log("生成BOSS卡!");
             }
+            // 然后是配置中的卡牌类型
+            else if (currentConfig != null && currentConfig.cardTypesToSpawn.Count > 0)
+            {
+                CardType typeToSpawn = currentConfig.cardTypesToSpawn[i % currentConfig.cardTypesToSpawn.Count];
+                var cardsOfType = CardManager.Instance.GetCardsByType(typeToSpawn);
+                if (cardsOfType.Count > 0)
+                {
+                    cardToCreate = cardsOfType[Random.Range(0, cardsOfType.Count)];
+                    Debug.Log($"生成类型 {typeToSpawn} 的卡牌: {cardToCreate.cardName}");
+                }
+            }
+            // 最后是随机卡牌
             else if (CardManager.Instance != null && CardManager.Instance.allCards.Count > 0)
             {
                 cardToCreate = CardManager.Instance.GetRandomCard();
@@ -130,12 +184,15 @@ public class TestSceneManager : MonoBehaviour
                 continue;
             }
 
-            GameObject cardObject = CardManager.Instance.CreateCard(cardToCreate, cardContainer);
-            if (cardObject != null)
+            if (cardToCreate != null)
             {
-                RectTransform cardRT = cardObject.GetComponent<RectTransform>();
-                arrangement.AddCard(cardRT);
-                cardsGenerated++;
+                GameObject cardObject = CardManager.Instance.CreateCard(cardToCreate, cardContainer);
+                if (cardObject != null)
+                {
+                    RectTransform cardRT = cardObject.GetComponent<RectTransform>();
+                    arrangement.AddCard(cardRT);
+                    cardsGenerated++;
+                }
             }
 
             yield return new WaitForSeconds(0.1f);
@@ -243,6 +300,9 @@ public class TestSceneManager : MonoBehaviour
 
         UpdateButtonState();
         Debug.Log("波数计数器已重置");
+
+        // 重置后自动开始第一波
+        StartCoroutine(AutoStartFirstWave());
     }
 
     [ContextMenu("强制设置波数为10")]

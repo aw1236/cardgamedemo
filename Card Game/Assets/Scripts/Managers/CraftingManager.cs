@@ -7,15 +7,16 @@ public class CraftingManager : MonoBehaviour
 {
     public static CraftingManager Instance { get; private set; }
 
-    [Header("合成配方")]
+    [Header("Basic Recipes")]
     public List<CraftingRecipe> allRecipes = new List<CraftingRecipe>();
 
-    // 合成槽引用
-    [Header("合成槽设置")]
+    [Header("Extended Recipes (Durability Support)")]
+    public List<CraftingRecipeExtended> extendedRecipes = new List<CraftingRecipeExtended>();
+
+    [Header("Crafting Slots")]
     public CardSlot craftingSlot1;
     public CardSlot craftingSlot2;
 
-    // 新增：防止重复合成的标记
     private bool isProcessingCrafting = false;
 
     private void Awake()
@@ -32,6 +33,16 @@ public class CraftingManager : MonoBehaviour
 
     public CraftingRecipe FindMatchingRecipe(CardData card1, CardData card2)
     {
+        // First check extended recipes
+        foreach (CraftingRecipeExtended extendedRecipe in extendedRecipes)
+        {
+            if (extendedRecipe.Matches(card1, card2))
+            {
+                return extendedRecipe;
+            }
+        }
+
+        // Then check basic recipes
         foreach (CraftingRecipe recipe in allRecipes)
         {
             if (recipe.Matches(card1, card2))
@@ -42,15 +53,18 @@ public class CraftingManager : MonoBehaviour
         return null;
     }
 
-    // 新增：检查并执行合成
     public void CheckForCrafting(CardSlot triggeredSlot)
     {
-        if (isProcessingCrafting) return;
+        if (isProcessingCrafting)
+        {
+            Debug.LogWarning("Crafting is already in process, skipping...");
+            return;
+        }
 
-        // 确保两个槽都有卡牌
         if (craftingSlot1 == null || craftingSlot2 == null ||
             craftingSlot1.GetCardData() == null || craftingSlot2.GetCardData() == null)
         {
+            Debug.LogWarning("Crafting slots are not properly set up");
             return;
         }
 
@@ -61,77 +75,256 @@ public class CraftingManager : MonoBehaviour
     {
         isProcessingCrafting = true;
 
-        // 等待一帧，确保所有拖拽操作完成
-        yield return null;
-
-        CardData card1 = craftingSlot1.GetCardData();
-        CardData card2 = craftingSlot2.GetCardData();
-
-        if (card1 == null || card2 == null)
+        try
         {
-            isProcessingCrafting = false;
-            yield break;
-        }
+            yield return null;
 
-        CraftingRecipe recipe = FindMatchingRecipe(card1, card2);
+            CardData card1 = craftingSlot1.GetCardData();
+            CardData card2 = craftingSlot2.GetCardData();
 
-        if (recipe != null)
-        {
-            Debug.Log($"即时合成: {card1.cardName} + {card2.cardName} = {recipe.result.cardName}");
-
-            // 执行合成
-            yield return StartCoroutine(PerformInstantCrafting(recipe));
-        }
-        else
-        {
-            Debug.Log($"没有匹配配方: {card1.cardName} + {card2.cardName}");
-
-            // 不匹配，弹出第二张卡牌
-            if (triggeredSlot != null)
+            if (card1 == null || card2 == null)
             {
-                triggeredSlot.ForceRemoveCard();
+                Debug.LogWarning("One of the crafting slots is empty");
+                yield break;
+            }
+
+            CraftingRecipe recipe = FindMatchingRecipe(card1, card2);
+
+            if (recipe != null)
+            {
+                Debug.Log($"Instant Crafting: {card1.cardName} + {card2.cardName} = {recipe.result.cardName}");
+
+                // Handle crafting with extended behavior
+                yield return StartCoroutine(PerformCraftingWithBehavior(recipe, card1, card2, triggeredSlot));
             }
             else
             {
-                // 如果不知道是哪个槽触发的，弹出最后放入的卡牌
-                craftingSlot2.ForceRemoveCard();
+                Debug.Log($"No matching recipe: {card1.cardName} + {card2.cardName}");
+
+                // FIX: Restore the second card return mechanism
+                if (triggeredSlot != null)
+                {
+                    // Return the card that was just placed
+                    triggeredSlot.ForceRemoveCard();
+                }
+                else
+                {
+                    // If we don't know which slot was triggered, return the second card
+                    craftingSlot2.ForceRemoveCard();
+                }
             }
         }
-
-        isProcessingCrafting = false;
+        finally
+        {
+            // FIX: Ensure this flag is always reset to prevent deadlock
+            isProcessingCrafting = false;
+        }
     }
 
-    // 修改：即时合成，产物出现在第一个格子
-    private IEnumerator PerformInstantCrafting(CraftingRecipe recipe)
+    /// <summary>
+    /// Perform crafting with extended behavior support
+    /// </summary>
+    private IEnumerator PerformCraftingWithBehavior(CraftingRecipe recipe, CardData card1, CardData card2, CardSlot triggeredSlot)
     {
-        // 记录第一个合成槽的位置
-        Transform firstSlotTransform = craftingSlot1.transform;
+        CraftingRecipeExtended extendedRecipe = recipe as CraftingRecipeExtended;
 
-        // 消耗两张卡牌
+        if (extendedRecipe != null)
+        {
+            yield return StartCoroutine(HandleExtendedRecipe(extendedRecipe, card1, card2, triggeredSlot));
+        }
+        else
+        {
+            // Normal crafting behavior
+            yield return StartCoroutine(PerformNormalCrafting(recipe));
+        }
+    }
+
+    /// <summary>
+    /// Handle extended recipe with special behaviors
+    /// </summary>
+    private IEnumerator HandleExtendedRecipe(CraftingRecipeExtended recipe, CardData card1, CardData card2, CardSlot triggeredSlot)
+    {
+        Debug.Log($"Handling extended recipe: {recipe.ingredient1Behavior} + {recipe.ingredient2Behavior}");
+
+        // FIX: Store references BEFORE any clearing
+        CardView cardView1 = craftingSlot1.CurrentCardView;
+        CardView cardView2 = craftingSlot2.CurrentCardView;
+
+        if (cardView1 == null || cardView2 == null)
+        {
+            Debug.LogError("Card views are null, cannot proceed with extended crafting");
+            yield break;
+        }
+
+        // FIX: Determine which slot should get the result
+        // For durability recipes, put result in the slot of the consumed ingredient
+        Transform resultSlotTransform = craftingSlot1.transform;
+        CardSlot resultSlot = craftingSlot1;
+
+        if (recipe.ingredient1Behavior == IngredientBehavior.ReduceDurability &&
+            recipe.ingredient2Behavior == IngredientBehavior.Consume)
+        {
+            // If ingredient1 is durability and ingredient2 is consume, put result in slot2
+            resultSlotTransform = craftingSlot2.transform;
+            resultSlot = craftingSlot2;
+        }
+
+        // Handle ingredient behaviors
+        bool destroyCard1 = true;
+        bool destroyCard2 = true;
+
+        // Process ingredient 1
+        if (recipe.ingredient1Behavior == IngredientBehavior.ReduceDurability)
+        {
+            destroyCard1 = ReduceCardDurability(cardView1, recipe.durabilityCost);
+            if (!destroyCard1)
+            {
+                Debug.Log($"Keeping {card1.cardName} with reduced durability");
+            }
+        }
+        else if (recipe.ingredient1Behavior == IngredientBehavior.Keep)
+        {
+            destroyCard1 = false;
+        }
+
+        // Process ingredient 2
+        if (recipe.ingredient2Behavior == IngredientBehavior.ReduceDurability)
+        {
+            destroyCard2 = ReduceCardDurability(cardView2, recipe.durabilityCost);
+            if (!destroyCard2)
+            {
+                Debug.Log($"Keeping {card2.cardName} with reduced durability");
+            }
+        }
+        else if (recipe.ingredient2Behavior == IngredientBehavior.Keep)
+        {
+            destroyCard2 = false;
+        }
+
+        // FIX: Clear slots only after processing durability
+        if (destroyCard1)
+        {
+            craftingSlot1.ClearSlot();
+        }
+        else
+        {
+            // If we're keeping card1, make sure it stays in its slot
+            cardView1.transform.SetParent(craftingSlot1.transform);
+            cardView1.transform.localPosition = Vector3.zero;
+            craftingSlot1.CurrentCardView = cardView1;
+        }
+
+        if (destroyCard2)
+        {
+            craftingSlot2.ClearSlot();
+        }
+        else
+        {
+            // If we're keeping card2, make sure it stays in its slot
+            cardView2.transform.SetParent(craftingSlot2.transform);
+            cardView2.transform.localPosition = Vector3.zero;
+            craftingSlot2.CurrentCardView = cardView2;
+        }
+
+        yield return null;
+
+        // Create the result card in the appropriate slot
+        if (resultSlot.CurrentCardView == null) // Only create if the slot is empty
+        {
+            GameObject newCard = CardManager.Instance.CreateCard(recipe.result, resultSlotTransform);
+            SetupNewCardInSlot(newCard.GetComponent<RectTransform>());
+
+            CardView newCardView = newCard.GetComponent<CardView>();
+            if (newCardView != null)
+            {
+                resultSlot.CurrentCardView = newCardView;
+            }
+
+            // Play crafting effects
+            yield return StartCoroutine(PlayCraftingEffects(newCard));
+        }
+        else
+        {
+            Debug.LogWarning($"Result slot is not empty, cannot place {recipe.result.cardName}");
+        }
+    }
+
+    /// <summary>
+    /// Reduce card durability and return whether the card should be destroyed
+    /// </summary>
+    private bool ReduceCardDurability(CardView cardView, int durabilityCost)
+    {
+        CardData cardData = cardView.GetCardData();
+
+        if (cardData is WeaponCardData weaponData)
+        {
+            // FIX: Ensure durability doesn't go below 0
+            weaponData.durability = Mathf.Max(0, weaponData.durability - durabilityCost);
+            Debug.Log($"Reduced {weaponData.cardName} durability to {weaponData.durability}");
+
+            // Update card display
+            cardView.Setup(weaponData);
+
+            // Check if durability reached zero
+            if (weaponData.durability <= 0)
+            {
+                Debug.Log($"{weaponData.cardName} broke due to zero durability!");
+                return true;
+            }
+            return false;
+        }
+        else if (cardData is ArmorCardData armorData)
+        {
+            // FIX: Ensure durability doesn't go below 0
+            armorData.durability = Mathf.Max(0, armorData.durability - durabilityCost);
+            Debug.Log($"Reduced {armorData.cardName} durability to {armorData.durability}");
+
+            // Update card display
+            cardView.Setup(armorData);
+
+            // Check if durability reached zero
+            if (armorData.durability <= 0)
+            {
+                Debug.Log($"{armorData.cardName} broke due to zero durability!");
+                return true;
+            }
+            return false;
+        }
+
+        // If not a durability card, treat as consume
+        Debug.LogWarning($"{cardData.cardName} is not a durability card, consuming it");
+        return true;
+    }
+
+    /// <summary>
+    /// Normal crafting - consume both ingredients
+    /// </summary>
+    private IEnumerator PerformNormalCrafting(CraftingRecipe recipe)
+    {
+        Transform resultSlotTransform = craftingSlot1.transform;
+
+        // Consume both cards
         craftingSlot1.ClearSlot();
         craftingSlot2.ClearSlot();
 
-        // 等待一帧，确保卡牌被清除
         yield return null;
 
-        // 在第一个合成槽创建新卡牌
-        GameObject newCard = CardManager.Instance.CreateCard(recipe.result, firstSlotTransform);
-
-        // 设置卡牌位置和属性
+        // Create result card in first slot
+        GameObject newCard = CardManager.Instance.CreateCard(recipe.result, resultSlotTransform);
         SetupNewCardInSlot(newCard.GetComponent<RectTransform>());
 
-        // 将新卡牌设置为第一个合成槽的当前卡牌
         CardView newCardView = newCard.GetComponent<CardView>();
         if (newCardView != null)
         {
             craftingSlot1.CurrentCardView = newCardView;
         }
 
-        // 播放合成特效
         yield return StartCoroutine(PlayCraftingEffects(newCard));
     }
 
-    // 新增：在槽位中设置新卡牌
+    /// <summary>
+    /// Setup new card in slot
+    /// </summary>
     private void SetupNewCardInSlot(RectTransform cardRT)
     {
         if (cardRT == null) return;
@@ -140,20 +333,19 @@ public class CraftingManager : MonoBehaviour
         cardRT.localScale = Vector3.one;
         cardRT.sizeDelta = new Vector2(200, 300);
 
-        // 确保尺寸正确
         StartCoroutine(EnsureNewCardSize(cardRT));
     }
 
-    // 新增：合成特效（可选）
+    /// <summary>
+    /// Play crafting effects
+    /// </summary>
     private IEnumerator PlayCraftingEffects(GameObject newCard)
     {
-        // 这里可以添加合成特效，比如缩放动画
         if (newCard != null)
         {
             RectTransform cardRT = newCard.GetComponent<RectTransform>();
             Vector3 originalScale = cardRT.localScale;
 
-            // 从小变大的动画
             cardRT.localScale = Vector3.zero;
             float duration = 0.3f;
             float elapsed = 0f;
@@ -169,39 +361,6 @@ public class CraftingManager : MonoBehaviour
         }
     }
 
-    // 保留原有的方法用于其他用途
-    public GameObject PerformCrafting(CardData card1, CardData card2, Transform parent)
-    {
-        CraftingRecipe recipe = FindMatchingRecipe(card1, card2);
-
-        if (recipe != null)
-        {
-            Debug.Log($"合成成功: {card1.cardName} + {card2.cardName} = {recipe.result.cardName}");
-
-            GameObject newCard = CardManager.Instance.CreateCard(recipe.result, parent);
-            SetupNewCard(newCard.GetComponent<RectTransform>());
-
-            return newCard;
-        }
-        else
-        {
-            Debug.Log($"没有找到配方: {card1.cardName} + {card2.cardName}");
-            return null;
-        }
-    }
-
-    private void SetupNewCard(RectTransform cardRT)
-    {
-        if (cardRT == null) return;
-
-        cardRT.anchoredPosition = Vector2.zero;
-        cardRT.localScale = Vector3.one;
-        cardRT.sizeDelta = new Vector2(200, 300);
-
-        // 确保尺寸正确
-        StartCoroutine(EnsureNewCardSize(cardRT));
-    }
-
     private IEnumerator EnsureNewCardSize(RectTransform cardRect)
     {
         yield return new WaitForEndOfFrame();
@@ -214,5 +373,46 @@ public class CraftingManager : MonoBehaviour
             cardRect.anchorMax = new Vector2(0.5f, 0.5f);
             cardRect.pivot = new Vector2(0.5f, 0.5f);
         }
+    }
+
+    // Keep the original method for backward compatibility
+    public GameObject PerformCrafting(CardData card1, CardData card2, Transform parent)
+    {
+        CraftingRecipe recipe = FindMatchingRecipe(card1, card2);
+
+        if (recipe != null)
+        {
+            Debug.Log($"Crafting successful: {card1.cardName} + {card2.cardName} = {recipe.result.cardName}");
+
+            GameObject newCard = CardManager.Instance.CreateCard(recipe.result, parent);
+            SetupNewCard(newCard.GetComponent<RectTransform>());
+
+            return newCard;
+        }
+        else
+        {
+            Debug.Log($"No recipe found: {card1.cardName} + {card2.cardName}");
+            return null;
+        }
+    }
+
+    private void SetupNewCard(RectTransform cardRT)
+    {
+        if (cardRT == null) return;
+
+        cardRT.anchoredPosition = Vector2.zero;
+        cardRT.localScale = Vector3.one;
+        cardRT.sizeDelta = new Vector2(200, 300);
+
+        StartCoroutine(EnsureNewCardSize(cardRT));
+    }
+
+    /// <summary>
+    /// FIX: Public method to reset crafting state in case of deadlock
+    /// </summary>
+    public void ResetCraftingState()
+    {
+        isProcessingCrafting = false;
+        Debug.Log("Crafting state has been reset");
     }
 }

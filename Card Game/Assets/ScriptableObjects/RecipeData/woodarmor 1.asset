@@ -9,11 +9,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5899c3673f555754bb6c5b58736bbd8b, type: 3}
-  m_Name: woodArmor
+  m_Script: {fileID: 11500000, guid: 38956332fa793b141986c1bc27df02e4, type: 3}
+  m_Name: woodarmor 1
   m_EditorClassIdentifier: 
   ingredient1: {fileID: 11400000, guid: c81ebce63f3be8d46aec37fb13c81676, type: 2}
   ingredient2: {fileID: 11400000, guid: 5d161414ca390f24186971382ced8ac4, type: 2}
   result: {fileID: 11400000, guid: fa5b26cbf26f56141abe974faf006b96, type: 2}
   requiresSpecificOrder: 0
   description: 
+  ingredient1Behavior: 0
+  ingredient2Behavior: 0
+  useDurability: 0
+  durabilityCost: 1
+  extendedDescription: 

@@ -9,11 +9,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5899c3673f555754bb6c5b58736bbd8b, type: 3}
-  m_Name: torch
+  m_Script: {fileID: 11500000, guid: 38956332fa793b141986c1bc27df02e4, type: 3}
+  m_Name: torch 1
   m_EditorClassIdentifier: 
   ingredient1: {fileID: 11400000, guid: 55c644abc8b195e498c25a84aea2be00, type: 2}
   ingredient2: {fileID: 11400000, guid: 9d051de5aebc2a344b50f0c56bb3992e, type: 2}
   result: {fileID: 11400000, guid: e4d5c3a043bf69343a3f2de00709641a, type: 2}
   requiresSpecificOrder: 0
-  description: You create torch.
+  description: 
+  ingredient1Behavior: 0
+  ingredient2Behavior: 0
+  useDurability: 0
+  durabilityCost: 1
+  extendedDescription: 

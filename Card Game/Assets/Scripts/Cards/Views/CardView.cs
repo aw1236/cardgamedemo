@@ -15,31 +15,36 @@ public class CardView : MonoBehaviour
 
     public void Setup(CardData data)
     {
-        _cardData = data;
+        _cardData
+= data;
         UpdateView();
     }
 
     /// <summary>
-    /// 🎯 设置卡牌数据（用于运行时数据替换）
+    /// Set card data and update view
     /// </summary>
     public void SetCardData(CardData newData)
     {
-        _cardData = newData;
-        UpdateView(); // 更新显示
+        _cardData
+= newData;
+        UpdateView();
     }
 
     private void UpdateView()
     {
         if (_cardData == null) return;
 
-        // 基本设置
-        cardBackground.color = _cardData.backgroundColor;
-        iconImage.sprite = _cardData.icon;
-        nameText.text = _cardData.cardName;
-        descriptionText.text = _cardData.description;
+        cardBackground
+.color = _cardData.backgroundColor;
+        iconImage
+.sprite = _cardData.icon;
+        nameText
+.text = _cardData.cardName;
+        descriptionText
+.text = _cardData.description;
 
-        // 根据卡牌类型显示属性
-        statsText.text = GetStatsText();
+        statsText
+.text = GetStatsText();
     }
 
     private string GetStatsText()
@@ -50,10 +55,10 @@ public class CardView : MonoBehaviour
                 return $"Attack: {monster.attack}\nHealth: {monster.health}";
 
             case WeaponCardData weapon:
-                return $"Attack: {weapon.attack}\nDurability: {weapon.durability}";
+                return $"Attack: {weapon.attack}\nDurability: {weapon.durability}/{weapon.maxDurability}";
 
             case ArmorCardData armor:
-                return $"Defense: {armor.defense}\nDurability: {armor.durability}";
+                return $"Defense: {armor.defense}\nDurability: {armor.durability}/{armor.maxDurability}";
 
             case FoodCardData food:
                 return $"HealAmount: {food.healAmount}";
@@ -67,4 +72,13 @@ public class CardView : MonoBehaviour
     }
 
     public CardData GetCardData() => _cardData;
+
+    /// <summary>
+    /// NEW: Update card display without changing card data
+    /// Useful for durability updates
+    /// </summary>
+    public void RefreshDisplay()
+    {
+        UpdateView();
+    }
 }

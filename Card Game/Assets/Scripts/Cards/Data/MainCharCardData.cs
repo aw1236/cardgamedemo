@@ -4,8 +4,8 @@ using UnityEngine;
 public class MainCharacterCardData : CardData
 {
     [Header("主角属性")]
-    public int maxHealth = 12;
-    public int health = 12;
+    public int maxHealth = 120;
+    public int health = 120;
     public int baseAttack = 1;
 
     [Header("装备引用")]

@@ -67,7 +67,7 @@ public class CombatManager : MonoBehaviour
         // 计算伤害
         int monsterAttack = monster.attack;
         int characterDefense = currentArmor != null ? currentArmor.defense : 0;
-        int actualDamage = Mathf.Max(monsterAttack - characterDefense, 1);
+        int actualDamage = Mathf.Max(monsterAttack - characterDefense, 0);
 
         Debug.Log($"🎯 伤害计算: 怪物攻击{monsterAttack} - 主角防御{characterDefense} = 实际伤害{actualDamage}");
 
