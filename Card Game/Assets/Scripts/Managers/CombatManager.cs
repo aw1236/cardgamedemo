@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
+using static EquipmentSlot;
 
 public class CombatManager : MonoBehaviour
 {
@@ -86,13 +87,14 @@ public class CombatManager : MonoBehaviour
             currentWeapon.durability = Mathf.Max(currentWeapon.durability, 0);
             Debug.Log($"⚔️ 武器耐久: {previousDurability} -> {currentWeapon.durability}");
 
+            // 🎯 新增：立即更新武器UI显示
+            UpdateWeaponUI(currentWeapon);
+
             // 🎯 检查武器是否损坏
             if (currentWeapon.durability <= 0)
             {
                 Debug.Log($"💥 武器 {currentWeapon.cardName} 已损坏！");
                 OnWeaponBreak(currentWeapon);
-                // 🎯 立即销毁，避免重复使用
-                //DestroyWeaponCardInSlot(currentWeapon);
             }
         }
 
@@ -103,13 +105,14 @@ public class CombatManager : MonoBehaviour
             currentArmor.durability = Mathf.Max(currentArmor.durability, 0);
             Debug.Log($"🛡️ 盔甲耐久: {previousDurability} -> {currentArmor.durability}");
 
+            // 🎯 新增：立即更新盔甲UI显示
+            UpdateArmorUI(currentArmor);
+
             // 🎯 检查盔甲是否损坏
             if (currentArmor.durability <= 0)
             {
                 Debug.Log($"💥 盔甲 {currentArmor.cardName} 已损坏！");
                 OnArmorBreak(currentArmor);
-                // 🎯 立即销毁，避免重复使用
-                //DestroyArmorCardInSlot(currentArmor);
             }
         }
 
@@ -123,6 +126,10 @@ public class CombatManager : MonoBehaviour
         if (healthController != null)
         {
             healthController.SetHealth(newMonsterHealth);
+
+            // 🎯 🎯 🎯 【关键修改位置】新增：确保怪物UI更新
+            healthController.ForceRefreshUI();
+            Debug.Log($"🔄 强制刷新怪物UI: {newMonsterHealth} HP");
         }
 
         Debug.Log($"🐺 怪物血量: {previousMonsterHealth} -> {newMonsterHealth} (受到{characterAttack}伤害)");
@@ -137,6 +144,50 @@ public class CombatManager : MonoBehaviour
 
         // 检查游戏结束
         CheckGameOver(mainChar);
+    }
+
+    /// <summary>
+    /// 🎯 新增：更新武器UI显示
+    /// </summary>
+    private void UpdateWeaponUI(WeaponCardData weaponData)
+    {
+        // 查找所有装备槽
+        EquipmentSlot[] equipmentSlots = FindObjectsOfType<EquipmentSlot>();
+        foreach (EquipmentSlot slot in equipmentSlots)
+        {
+            if (slot.equipmentType == EquipmentType.Weapon && slot.CurrentCardView != null)
+            {
+                CardData slotCardData = slot.CurrentCardView.GetCardData();
+                if (slotCardData == weaponData) // 引用比较
+                {
+                    Debug.Log($"🔄 更新武器UI显示: {weaponData.cardName} (耐久:{weaponData.durability})");
+                    slot.CurrentCardView.RefreshDisplay();
+                    break;
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// 🎯 新增：更新盔甲UI显示
+    /// </summary>
+    private void UpdateArmorUI(ArmorCardData armorData)
+    {
+        // 查找所有装备槽
+        EquipmentSlot[] equipmentSlots = FindObjectsOfType<EquipmentSlot>();
+        foreach (EquipmentSlot slot in equipmentSlots)
+        {
+            if (slot.equipmentType == EquipmentType.Armor && slot.CurrentCardView != null)
+            {
+                CardData slotCardData = slot.CurrentCardView.GetCardData();
+                if (slotCardData == armorData) // 引用比较
+                {
+                    Debug.Log($"🔄 更新盔甲UI显示: {armorData.cardName} (耐久:{armorData.durability})");
+                    slot.CurrentCardView.RefreshDisplay();
+                    break;
+                }
+            }
+        }
     }
 
     /// <summary>

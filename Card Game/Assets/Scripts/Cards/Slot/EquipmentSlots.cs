@@ -31,10 +31,14 @@ public class EquipmentSlot : CardSlot
                 CardData runtimeCardData = CreateRuntimeCardData(originalCardData);
                 cardView.SetCardData(runtimeCardData);
 
-                // 如果槽位已有卡牌，先移除
+                // 🎯 新增：立即刷新背景（添加这一行）
+                cardView.RefreshBackground();
+
+                // 如果槽位已有卡牌，先处理旧卡牌
                 if (IsFull())
                 {
-                    ForceRemoveCard();
+                    // 🎯 修复：返回旧卡牌到原位置，而不是销毁
+                    ReturnCurrentCardToOriginalPosition();
                 }
 
                 PlaceCard(draggedCard.transform, cardView);
@@ -42,12 +46,41 @@ public class EquipmentSlot : CardSlot
 
                 // 🎯 应用装备效果到主角（使用副本数据）
                 ApplyEquipmentToMainCharacter(runtimeCardData);
+
+                // 🎯 新增：立即更新装备卡牌的UI显示
+                cardView.RefreshDisplay();
             }
             else
             {
                 Debug.Log($"无法装备 {originalCardData.cardName} 到 {slotType} 槽位");
                 draggedCard.ReturnToOriginalPosition();
             }
+        }
+    }
+
+    /// <summary>
+    /// 🎯 新增：返回当前卡牌到原位置（不销毁）
+    /// </summary>
+    private void ReturnCurrentCardToOriginalPosition()
+    {
+        if (CurrentCardView != null)
+        {
+            // 先移除装备效果
+            RemoveEquipmentFromMainCharacter(CurrentCardView.GetCardData());
+
+            // 使用CardDragHandler返回原位置
+            CardDragHandler dragHandler = CurrentCardView.GetComponent<CardDragHandler>();
+            if (dragHandler != null)
+            {
+                dragHandler.ReturnToOriginalPosition();
+            }
+            else
+            {
+                // 如果没有CardDragHandler，使用安全移除
+                SafeRemoveCard();
+            }
+
+            CurrentCardView = null;
         }
     }
 
@@ -85,6 +118,9 @@ public class EquipmentSlot : CardSlot
         target.attack = source.attack;
         target.durability = source.durability; // 使用原始耐久度
         target.maxDurability = source.durability; // 记录最大耐久度
+
+        // 🎯 新增：复制背景预制体引用
+        target.cardBackgroundPrefab = source.cardBackgroundPrefab;
     }
 
     /// <summary>
@@ -99,6 +135,9 @@ public class EquipmentSlot : CardSlot
         target.defense = source.defense;
         target.durability = source.durability; // 使用原始耐久度
         target.maxDurability = source.durability; // 记录最大耐久度
+
+        // 🎯 新增：复制背景预制体引用
+        target.cardBackgroundPrefab = source.cardBackgroundPrefab;
     }
 
     protected override void OnCardPlaced(CardView cardView)
@@ -218,7 +257,7 @@ public class EquipmentSlot : CardSlot
     }
 
     /// <summary>
-    /// 强制移除卡牌（当替换装备时）
+    /// 强制移除卡牌（当替换装备时）- 现在改为返回原位置而不是销毁
     /// </summary>
     public override void ForceRemoveCard()
     {
@@ -227,13 +266,24 @@ public class EquipmentSlot : CardSlot
             // 先移除装备效果
             RemoveEquipmentFromMainCharacter(CurrentCardView.GetCardData());
 
-            // 然后移除卡牌
-            base.ForceRemoveCard();
+            // 🎯 修复：返回原位置而不是销毁
+            ReturnCurrentCardToOriginalPosition();
         }
     }
 
     /// <summary>
-    /// 🎯 强制移除并销毁卡牌（用于装备损坏时）
+    /// 🎯 新增：更新装备卡牌的UI显示
+    /// </summary>
+    public void UpdateEquipmentDisplay()
+    {
+        if (CurrentCardView != null)
+        {
+            CurrentCardView.RefreshDisplay();
+        }
+    }
+
+    /// <summary>
+    /// 🎯 强制移除并销毁卡牌（用于装备损坏时）- 仅在耐久度为0时使用
     /// </summary>
     public void ForceRemoveAndDestroy()
     {
@@ -249,13 +299,12 @@ public class EquipmentSlot : CardSlot
             Debug.Log($"🗑️ 已销毁损坏的装备卡牌");
         }
     }
-}
-
-/// <summary>
-/// 装备类型枚举
-/// </summary>
-public enum EquipmentType
-{
-    Weapon,
-    Armor
+    /// <summary>
+    /// 装备类型枚举
+    /// </summary>
+    public enum EquipmentType
+    {
+        Weapon,
+        Armor
+    }
 }
