@@ -6316,7 +6316,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -8620202154233844528, guid: fc584d329b77b9545b9c9c8bb829e553, type: 3}
+  m_Sprite: {fileID: -7517053698926566003, guid: 59a0e04e0303bfc43bcfeeb0143f7ac1, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -6404,7 +6404,7 @@ GameObject:
   - component: {fileID: 1138108687868794994}
   - component: {fileID: 7993162844174158469}
   m_Layer: 0
-  m_Name: BGM game scene first
+  m_Name: BGM game scene second
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7253,9 +7253,9 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 02f9e9ce458221948aaf0cc80e38ec96, type: 3}
+  m_audioClip: {fileID: 8300000, guid: ea883988792a7f043ac5c6b82b37238e, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 0.5
+  m_Volume: 0.18
   m_Pitch: 0.82
   Loop: 1
   Mute: 0

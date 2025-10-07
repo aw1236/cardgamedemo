@@ -23,4 +23,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/new plot second.unity
     guid: f6e3ae3107e516a4a94b7c62fc06a25b
+  - enabled: 1
+    path: Assets/Scenes/game win scene.unity
+    guid: b01a9726149f9af41ba2d94a8b1e2dae
+  - enabled: 1
+    path: Assets/Scenes/geme lose scene.unity
+    guid: b94baffb78c77cf49ae0389cb23c7285
   m_configObjects: {}
