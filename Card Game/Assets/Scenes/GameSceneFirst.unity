@@ -5726,6 +5726,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 615714983b6e35347848197c7b828092, type: 2}
   - {fileID: 11400000, guid: 36d6808863615e547aa296bec9b4f563, type: 2}
   - {fileID: 11400000, guid: ddc823283f4103240936e8df0c3ddfe3, type: 2}
+  - {fileID: 11400000, guid: e63a73a23d54df1428e1f66fd82874e8, type: 2}
   craftingSlot1: {fileID: 1484918043}
   craftingSlot2: {fileID: 1287801054}
 --- !u!4 &2109509266

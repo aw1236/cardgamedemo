@@ -35,6 +35,13 @@ public class CardSlot : MonoBehaviour, IDropHandler
             return false;
         }
 
+        // 新增：合成槽不接受怪物卡牌
+        if (slotType == SlotType.Crafting && cardData.cardType == CardType.Monster)
+        {
+            Debug.Log($"合成槽不能接受怪物卡牌");
+            return false;
+        }
+
         if (canAcceptAnyCard) return true;
 
         switch (slotType)

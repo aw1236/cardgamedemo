@@ -256,42 +256,69 @@ public class CraftingManager : MonoBehaviour
     {
         CardData cardData = cardView.GetCardData();
 
+        // 创建 CardData 的临时副本来修改，而不是直接修改预设体
+        CardData tempCardData = null;
+
         if (cardData is WeaponCardData weaponData)
         {
-            // FIX: Ensure durability doesn't go below 0
-            weaponData.durability = Mathf.Max(0, weaponData.durability - durabilityCost);
-            Debug.Log($"Reduced {weaponData.cardName} durability to {weaponData.durability}");
+            // 创建武器数据的副本
+            WeaponCardData tempWeaponData = ScriptableObject.CreateInstance<WeaponCardData>();
+            tempWeaponData.cardName = weaponData.cardName;
+            tempWeaponData.cardType = weaponData.cardType;
+            tempWeaponData.icon = weaponData.icon;
+            tempWeaponData.description = weaponData.description;
+            tempWeaponData.backgroundColor = weaponData.backgroundColor;
+            tempWeaponData.cardBackgroundPrefab = weaponData.cardBackgroundPrefab;
+            tempWeaponData.attack = weaponData.attack;
+            tempWeaponData.defense = weaponData.defense;
+            tempWeaponData.durability = Mathf.Max(0, weaponData.durability - durabilityCost);
+            tempWeaponData.maxDurability = weaponData.maxDurability;
 
-            // Update card display
-            cardView.Setup(weaponData);
+            tempCardData = tempWeaponData;
+            Debug.Log($"Reduced {tempWeaponData.cardName} durability to {tempWeaponData.durability} (from {weaponData.durability})");
 
-            // Check if durability reached zero
-            if (weaponData.durability <= 0)
+            // 更新卡牌显示使用临时数据
+            cardView.Setup(tempCardData);
+
+            // 检查如果耐久度为零则销毁卡牌
+            if (tempWeaponData.durability <= 0)
             {
-                Debug.Log($"{weaponData.cardName} broke due to zero durability!");
+                Debug.Log($"{tempWeaponData.cardName} broke due to zero durability!");
                 return true;
             }
             return false;
         }
         else if (cardData is ArmorCardData armorData)
         {
-            // FIX: Ensure durability doesn't go below 0
-            armorData.durability = Mathf.Max(0, armorData.durability - durabilityCost);
-            Debug.Log($"Reduced {armorData.cardName} durability to {armorData.durability}");
+            // 创建防具数据的副本
+            ArmorCardData tempArmorData = ScriptableObject.CreateInstance<ArmorCardData>();
+            tempArmorData.cardName = armorData.cardName;
+            tempArmorData.cardType = armorData.cardType;
+            tempArmorData.icon = armorData.icon;
+            tempArmorData.description = armorData.description;
+            tempArmorData.backgroundColor = armorData.backgroundColor;
+            tempArmorData.cardBackgroundPrefab = armorData.cardBackgroundPrefab;
+            tempArmorData.attack = armorData.attack;
+            tempArmorData.defense = armorData.defense;
+            tempArmorData.durability = Mathf.Max(0, armorData.durability - durabilityCost);
+            tempArmorData.maxDurability = armorData.maxDurability;
 
-            // Update card display
-            cardView.Setup(armorData);
+            tempCardData = tempArmorData;
+            Debug.Log($"Reduced {tempArmorData.cardName} durability to {tempArmorData.durability} (from {armorData.durability})");
 
-            // Check if durability reached zero
-            if (armorData.durability <= 0)
+            // 更新卡牌显示使用临时数据
+            cardView.Setup(tempCardData);
+
+            // 检查如果耐久度为零则销毁卡牌
+            if (tempArmorData.durability <= 0)
             {
-                Debug.Log($"{armorData.cardName} broke due to zero durability!");
+                Debug.Log($"{tempArmorData.cardName} broke due to zero durability!");
                 return true;
             }
             return false;
         }
 
-        // If not a durability card, treat as consume
+        // 如果不是耐久度卡牌，直接消耗
         Debug.LogWarning($"{cardData.cardName} is not a durability card, consuming it");
         return true;
     }
