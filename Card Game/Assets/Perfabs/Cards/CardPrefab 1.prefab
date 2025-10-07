@@ -420,7 +420,7 @@ PrefabInstance:
     - target: {fileID: 2846453340245934721, guid: 2e57d3c96f82cd1468e8c86f8cff74f9, type: 3}
       propertyPath: m_fontAsset
       value: 
-      objectReference: {fileID: 11400000, guid: 28734ec9723547a458790b7a35855e77, type: 2}
+      objectReference: {fileID: 11400000, guid: 579826cfedd61c842b04581d2a2ec897, type: 2}
     - target: {fileID: 2846453340245934721, guid: 2e57d3c96f82cd1468e8c86f8cff74f9, type: 3}
       propertyPath: m_fontSizeBase
       value: 20
@@ -432,7 +432,7 @@ PrefabInstance:
     - target: {fileID: 2846453340245934721, guid: 2e57d3c96f82cd1468e8c86f8cff74f9, type: 3}
       propertyPath: m_sharedMaterial
       value: 
-      objectReference: {fileID: -2256212031254910629, guid: 28734ec9723547a458790b7a35855e77, type: 2}
+      objectReference: {fileID: -2256212031254910629, guid: 579826cfedd61c842b04581d2a2ec897, type: 2}
     - target: {fileID: 2846453340245934721, guid: 2e57d3c96f82cd1468e8c86f8cff74f9, type: 3}
       propertyPath: m_enableAutoSizing
       value: 1
@@ -844,6 +844,10 @@ PrefabInstance:
       value: -1.1023788
       objectReference: {fileID: 0}
     - target: {fileID: 4638566192266590051, guid: 03de4ead2ba9f504982e246df606153a, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+    - target: {fileID: 4638566192266590051, guid: 03de4ead2ba9f504982e246df606153a, type: 3}
       propertyPath: m_fontColor.a
       value: 0
       objectReference: {fileID: 0}
@@ -868,6 +872,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4638566192266590051, guid: 03de4ead2ba9f504982e246df606153a, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+    - target: {fileID: 4638566192266590051, guid: 03de4ead2ba9f504982e246df606153a, type: 3}
       propertyPath: m_enableAutoSizing
       value: 1
       objectReference: {fileID: 0}
@@ -878,6 +886,10 @@ PrefabInstance:
     - target: {fileID: 4638566192266590051, guid: 03de4ead2ba9f504982e246df606153a, type: 3}
       propertyPath: m_HorizontalAlignment
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4638566192266590051, guid: 03de4ead2ba9f504982e246df606153a, type: 3}
+      propertyPath: m_hasFontAssetChanged
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6749130371697994353, guid: 03de4ead2ba9f504982e246df606153a, type: 3}
       propertyPath: m_Name

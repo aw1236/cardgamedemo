@@ -19,4 +19,4 @@ MonoBehaviour:
   backgroundColor: {r: 0.5725452, g: 0.4923238, b: 0.9575472, a: 1}
   cardBackgroundPrefab: {fileID: 2238023044661848372, guid: 9a85dd6ed67800e4db3de73f343aa85c, type: 3}
   healAmount: 4
-  useDescription: "\u6062\u590D {0} \u70B9\u751F\u547D\u503C"
+  useDescription: "\u6062\u590D {0} \u70B9\u8840\u91CF"

@@ -17,6 +17,7 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: 321d8291ab2c6cb4b81d3dda37a91ef6, type: 3}
   description: It's temporary armor.
   backgroundColor: {r: 0.5754717, g: 0.12486649, b: 0.4441237, a: 1}
+  cardBackgroundPrefab: {fileID: 2238023044661848372, guid: 4e810e542c19ca24185a095e0c90a5f3, type: 3}
   attack: 0
   defense: 1
   durability: 4

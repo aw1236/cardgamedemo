@@ -92,7 +92,7 @@ public class CombatManager : MonoBehaviour
                 Debug.Log($"💥 武器 {currentWeapon.cardName} 已损坏！");
                 OnWeaponBreak(currentWeapon);
                 // 🎯 立即销毁，避免重复使用
-                DestroyWeaponCardInSlot(currentWeapon);
+                //DestroyWeaponCardInSlot(currentWeapon);
             }
         }
 
@@ -109,7 +109,7 @@ public class CombatManager : MonoBehaviour
                 Debug.Log($"💥 盔甲 {currentArmor.cardName} 已损坏！");
                 OnArmorBreak(currentArmor);
                 // 🎯 立即销毁，避免重复使用
-                DestroyArmorCardInSlot(currentArmor);
+                //DestroyArmorCardInSlot(currentArmor);
             }
         }
 
