@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6312d7d533fd7f4098b15487436a2fe, type: 3}
   m_Name: bee
   m_EditorClassIdentifier: 
-  cardName: Bee
+  cardName: "\u871C\u8702"
   cardType: 0
   icon: {fileID: 0}
   description: It's Bee.

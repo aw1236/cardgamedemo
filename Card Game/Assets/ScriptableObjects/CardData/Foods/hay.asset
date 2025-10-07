@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd0d455773aea61409f308629ede430c, type: 3}
   m_Name: hay
   m_EditorClassIdentifier: 
-  cardName: Hay
+  cardName: "\u5E72\u8349"
   cardType: 5
   icon: {fileID: 21300000, guid: 5554ca8c7be720f418a6615961c299a3, type: 3}
   description: It's hay.

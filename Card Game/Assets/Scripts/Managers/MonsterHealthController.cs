@@ -12,7 +12,7 @@ public class MonsterHealthController : MonoBehaviour
         cardView = GetComponent<CardView>();
         if (cardView == null)
         {
-            Debug.LogError("❌ MonsterHealthController: 找不到CardView组件");
+            Debug.LogError("MonsterHealthController: 找不到CardView组件");
         }
     }
 
@@ -25,7 +25,7 @@ public class MonsterHealthController : MonoBehaviour
         {
             currentHealth = baseHealth;
             isInitialized = true;
-            Debug.Log($"🩸 初始化怪物血量: {currentHealth}");
+            Debug.Log($"初始化怪物血量: {currentHealth}");
 
             // 🎯 新增：初始化后立即更新UI
             UpdateMonsterUI();
@@ -40,7 +40,7 @@ public class MonsterHealthController : MonoBehaviour
     {
         int previousHealth = currentHealth;
         currentHealth = Mathf.Max(0, health);
-        Debug.Log($"🩸 设置怪物血量: {previousHealth} -> {currentHealth}");
+        Debug.Log($"设置怪物血量: {previousHealth} -> {currentHealth}");
 
         // 🎯 新增：血量变化时更新UI
         UpdateMonsterUI();
@@ -61,7 +61,7 @@ public class MonsterHealthController : MonoBehaviour
     {
         int previousHealth = currentHealth;
         currentHealth = Mathf.Max(0, currentHealth - damage);
-        Debug.Log($"💥 怪物受到 {damage} 伤害，剩余血量: {previousHealth} -> {currentHealth}");
+        Debug.Log($"怪物受到 {damage} 伤害，剩余血量: {previousHealth} -> {currentHealth}");
 
         // 🎯 新增：受伤时更新UI
         UpdateMonsterUI();
@@ -75,18 +75,18 @@ public class MonsterHealthController : MonoBehaviour
         if (cardView != null)
         {
             cardView.RefreshDisplay();
-            Debug.Log($"🔄 更新怪物UI显示: {currentHealth} HP");
+            Debug.Log($"更新怪物UI显示: {currentHealth} HP");
         }
         else
         {
-            Debug.LogWarning("⚠️ 无法更新怪物UI: CardView为空");
+            Debug.LogWarning("无法更新怪物UI: CardView为空");
 
             // 尝试重新获取CardView
             cardView = GetComponent<CardView>();
             if (cardView != null)
             {
                 cardView.RefreshDisplay();
-                Debug.Log("✅ 重新获取CardView并更新UI");
+                Debug.Log("重新获取CardView并更新UI");
             }
         }
     }
@@ -98,4 +98,5 @@ public class MonsterHealthController : MonoBehaviour
     {
         UpdateMonsterUI();
     }
+
 }

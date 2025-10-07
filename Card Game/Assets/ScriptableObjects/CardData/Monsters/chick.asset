@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6312d7d533fd7f4098b15487436a2fe, type: 3}
   m_Name: chick
   m_EditorClassIdentifier: 
-  cardName: Chick
+  cardName: "\u5C0F\u9E21"
   cardType: 0
   icon: {fileID: 21300000, guid: ec02013256c3e0c40b06d46162f1108a, type: 3}
   description: It's chick.

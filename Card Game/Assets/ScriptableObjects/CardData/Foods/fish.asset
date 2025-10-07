@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd0d455773aea61409f308629ede430c, type: 3}
   m_Name: fish
   m_EditorClassIdentifier: 
-  cardName: Fish
+  cardName: "\u751F\u9C7C"
   cardType: 5
   icon: {fileID: 21300000, guid: ae08e8b80e376fc4fbce986bc31cc122, type: 3}
   description: It's fish.

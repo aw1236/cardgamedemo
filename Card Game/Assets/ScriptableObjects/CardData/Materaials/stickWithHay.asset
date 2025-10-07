@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 502da9c836180eb41bb89da67f1a6876, type: 3}
   m_Name: stickWithHay
   m_EditorClassIdentifier: 
-  cardName: Stick with Hay
+  cardName: "\u7F20\u8349\u6728\u68CD"
   cardType: 4
   icon: {fileID: 21300000, guid: 6100dbbea50808c49a4609a101af2551, type: 3}
   description: It's a Stick wrapped with Hay

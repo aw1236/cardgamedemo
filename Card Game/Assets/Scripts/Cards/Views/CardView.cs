@@ -53,69 +53,38 @@ public class CardView : MonoBehaviour
     /// </summary>
     private void UpdateBackground()
     {
-        Debug.Log($"🎨 UpdateBackground 被调用: {_cardData?.cardName}");
-
-        // 1. 销毁旧的背景实例（如果有的话）
+        // 移除旧的背景实例
         if (_currentBackgroundInstance != null)
         {
             Destroy(_currentBackgroundInstance);
             _currentBackgroundInstance = null;
-            Debug.Log("🗑️ 销毁旧背景实例");
         }
 
-        // 2. 检查必要组件
-        if (_cardData == null)
-        {
-            Debug.LogError("❌ CardData 为空");
-            return;
-        }
+        if (_cardData == null) return;
 
-        // 🎯 更详细的调试信息
-        Debug.Log($"🔍 检查卡牌数据: {_cardData.cardName}, Type: {_cardData.GetType()}");
-        Debug.Log($"🔍 cardBackgroundPrefab: {_cardData.cardBackgroundPrefab}");
-        Debug.Log($"🔍 cardBackgroundParent: {cardBackgroundParent}");
-
+        // 简化的检查
         if (_cardData.cardBackgroundPrefab == null)
         {
-            Debug.LogError($"❌ {_cardData.cardName} 的 cardBackgroundPrefab 为空");
-
-            // 🎯 临时创建默认背景
             CreateDefaultBackground();
             return;
         }
 
-        if (cardBackgroundParent == null)
+        if (cardBackgroundParent == null) return;
+
+        // 实例化新背景（移除try-catch和详细日志）
+        GameObject newBackground = Instantiate(_cardData.cardBackgroundPrefab, cardBackgroundParent);
+        _currentBackgroundInstance = newBackground;
+
+        // 设置UI布局
+        RectTransform rt = newBackground.GetComponent<RectTransform>();
+        if (rt != null)
         {
-            Debug.LogError("❌ cardBackgroundParent 引用为空");
-            return;
-        }
-
-        // 3. 实例化新的背景预制体
-        Debug.Log($"🔄 创建背景: {_cardData.cardName}");
-
-        try
-        {
-            GameObject newBackground = Instantiate(_cardData.cardBackgroundPrefab, cardBackgroundParent);
-            _currentBackgroundInstance = newBackground;
-
-            // 设置 UI 布局
-            RectTransform rt = newBackground.GetComponent<RectTransform>();
-            if (rt != null)
-            {
-                rt.anchorMin = Vector2.zero;
-                rt.anchorMax = Vector2.one;
-                rt.sizeDelta = Vector2.zero;
-                rt.localPosition = Vector3.zero;
-                rt.localScale = Vector3.one;
-                newBackground.transform.SetSiblingIndex(0);
-            }
-
-            Debug.Log("✅ 背景创建成功");
-        }
-        catch (System.Exception e)
-        {
-            Debug.LogError($"❌ 背景实例化失败: {e.Message}");
-            CreateDefaultBackground();
+            rt.anchorMin = Vector2.zero;
+            rt.anchorMax = Vector2.one;
+            rt.sizeDelta = Vector2.zero;
+            rt.localPosition = Vector3.zero;
+            rt.localScale = Vector3.one;
+            newBackground.transform.SetSiblingIndex(0);
         }
     }
 
@@ -160,7 +129,7 @@ public class CardView : MonoBehaviour
         }
 
         defaultBg.transform.SetSiblingIndex(0);
-        Debug.Log($"✅ 创建默认背景完成: {_cardData.cardName}");
+        Debug.Log($"创建默认背景完成: {_cardData.cardName}");
     }
 
     private string GetStatsText()
@@ -202,14 +171,14 @@ public class CardView : MonoBehaviour
 
     public void RefreshDisplay()
     {
-        Debug.Log("🔄 RefreshDisplay 被调用");
+        Debug.Log("RefreshDisplay 被调用");
         UpdateView();
     }
 
     // 🎯 新增：专门用于更新背景的方法
     public void RefreshBackground()
     {
-        Debug.Log("🎨 RefreshBackground 被调用");
+        Debug.Log("RefreshBackground 被调用");
         UpdateBackground();
     }
 }

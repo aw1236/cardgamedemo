@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6312d7d533fd7f4098b15487436a2fe, type: 3}
   m_Name: bearKing
   m_EditorClassIdentifier: 
-  cardName: Bear KIng
+  cardName: "\u72D7\u718A\u738B"
   cardType: 0
   icon: {fileID: 21300000, guid: ea3538b6446538f43b03f79a5b78a947, type: 3}
   description: It's Bear King

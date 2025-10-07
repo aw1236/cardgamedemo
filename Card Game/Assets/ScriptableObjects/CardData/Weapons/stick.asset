@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f18b0e3eca1388e4dbfecec1d3973e0b, type: 3}
   m_Name: stick
   m_EditorClassIdentifier: 
-  cardName: Stick
+  cardName: "\u6728\u68CD"
   cardType: 2
   icon: {fileID: 21300000, guid: 84e82be6dba927947b3326e9a8bfcdd9, type: 3}
   description: It's stick.

@@ -12,7 +12,7 @@ public class EquipmentSlot : CardSlot
         // 确保有对主角数据的引用
         if (MainCharacterSlot.Instance == null)
         {
-            Debug.LogError("❌ 未找到 MainCharacterSlot 实例！");
+            Debug.LogError("未找到 MainCharacterSlot 实例！");
         }
     }
 
@@ -187,7 +187,7 @@ public class EquipmentSlot : CardSlot
     {
         if (MainCharacterSlot.Instance == null || MainCharacterSlot.Instance.mainCharacterData == null)
         {
-            Debug.LogError("❌ 无法应用装备效果：主角数据未找到");
+            Debug.LogError("无法应用装备效果：主角数据未找到");
             return;
         }
 
@@ -197,21 +197,21 @@ public class EquipmentSlot : CardSlot
         {
             // 应用武器效果
             mainChar.equippedWeapon = weaponData;
-            Debug.Log($"⚔️ 装备武器: {weaponData.cardName} (攻击力+{weaponData.attack})");
+            Debug.Log($"装备武器: {weaponData.cardName} (攻击力+{weaponData.attack})");
 
             // 更新UI显示
             MainCharacterSlot.Instance.UpdateMainCharacterDisplay();
-            MainCharacterSlot.Instance.AddCombatLog($"⚔️ 装备了 {weaponData.cardName}");
+            MainCharacterSlot.Instance.AddCombatLog($"装备了 {weaponData.cardName}");
         }
         else if (cardData is ArmorCardData armorData)
         {
             // 应用盔甲效果
             mainChar.equippedArmor = armorData;
-            Debug.Log($"🛡️ 装备盔甲: {armorData.cardName} (防御力+{armorData.defense})");
+            Debug.Log($"装备盔甲: {armorData.cardName} (防御力+{armorData.defense})");
 
             // 更新UI显示
             MainCharacterSlot.Instance.UpdateMainCharacterDisplay();
-            MainCharacterSlot.Instance.AddCombatLog($"🛡️ 装备了 {armorData.cardName}");
+            MainCharacterSlot.Instance.AddCombatLog($"装备了 {armorData.cardName}");
         }
     }
 
@@ -222,7 +222,7 @@ public class EquipmentSlot : CardSlot
     {
         if (MainCharacterSlot.Instance == null || MainCharacterSlot.Instance.mainCharacterData == null)
         {
-            Debug.LogError("❌ 无法移除装备效果：主角数据未找到");
+            Debug.LogError("无法移除装备效果：主角数据未找到");
             return;
         }
 
@@ -234,11 +234,11 @@ public class EquipmentSlot : CardSlot
             if (mainChar.equippedWeapon == weaponData)
             {
                 mainChar.equippedWeapon = null;
-                Debug.Log($"🗑️ 卸下武器: {weaponData.cardName}");
+                Debug.Log($"卸下武器: {weaponData.cardName}");
 
                 // 更新UI显示
                 MainCharacterSlot.Instance.UpdateMainCharacterDisplay();
-                MainCharacterSlot.Instance.AddCombatLog($"🗑️ 卸下了 {weaponData.cardName}");
+                MainCharacterSlot.Instance.AddCombatLog($"卸下了 {weaponData.cardName}");
             }
         }
         else if (cardData is ArmorCardData armorData)
@@ -247,11 +247,11 @@ public class EquipmentSlot : CardSlot
             if (mainChar.equippedArmor == armorData)
             {
                 mainChar.equippedArmor = null;
-                Debug.Log($"🗑️ 卸下盔甲: {armorData.cardName}");
+                Debug.Log($"卸下盔甲: {armorData.cardName}");
 
                 // 更新UI显示
                 MainCharacterSlot.Instance.UpdateMainCharacterDisplay();
-                MainCharacterSlot.Instance.AddCombatLog($"🗑️ 卸下了 {armorData.cardName}");
+                MainCharacterSlot.Instance.AddCombatLog($"卸下了 {armorData.cardName}");
             }
         }
     }
@@ -296,7 +296,7 @@ public class EquipmentSlot : CardSlot
             Destroy(CurrentCardView.gameObject);
             CurrentCardView = null;
 
-            Debug.Log($"🗑️ 已销毁损坏的装备卡牌");
+            Debug.Log($"已销毁损坏的装备卡牌");
         }
     }
     /// <summary>

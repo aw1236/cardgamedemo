@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 502da9c836180eb41bb89da67f1a6876, type: 3}
   m_Name: slingshotFrame
   m_EditorClassIdentifier: 
-  cardName: Slingshot Frame
+  cardName: "\u6728\u5F39\u5F13\u6846\u67B6"
   cardType: 4
   icon: {fileID: 21300000, guid: f904827dc13387a49989875f02dc6306, type: 3}
   description: It's slingshot frame

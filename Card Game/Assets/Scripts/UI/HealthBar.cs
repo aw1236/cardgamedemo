@@ -10,7 +10,7 @@ public class HealthBar : MonoBehaviour
     {
         if (healthText != null)
         {
-            healthText.text = $"HP: {currentHealth}/{maxHealth}";
+            healthText.text = $"血量: {currentHealth}/{maxHealth}";
 
             // 根据血量改变颜色
             if (currentHealth <= maxHealth * 0.3f)

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 502da9c836180eb41bb89da67f1a6876, type: 3}
   m_Name: flint
   m_EditorClassIdentifier: 
-  cardName: Flint
+  cardName: "\u71E7\u77F3"
   cardType: 4
   icon: {fileID: 0}
   description: It's flint.

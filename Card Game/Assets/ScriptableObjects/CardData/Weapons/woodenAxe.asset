@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f18b0e3eca1388e4dbfecec1d3973e0b, type: 3}
   m_Name: woodenAxe
   m_EditorClassIdentifier: 
-  cardName: wooden axe
+  cardName: "\u6728\u65A7"
   cardType: 2
   icon: {fileID: 21300000, guid: c33c6ae4ffbbdc8439f47c9811ec4064, type: 3}
   description: It's wooden axe.

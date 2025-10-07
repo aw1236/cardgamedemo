@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f18b0e3eca1388e4dbfecec1d3973e0b, type: 3}
   m_Name: slingshot
   m_EditorClassIdentifier: 
-  cardName: Slingshot
+  cardName: "\u6728\u5F39\u5F13"
   cardType: 2
   icon: {fileID: 21300000, guid: 6e25e74d93f2a85458c20d2e7958b0a7, type: 3}
   description: It's slingshot.

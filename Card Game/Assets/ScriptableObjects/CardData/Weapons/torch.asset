@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f18b0e3eca1388e4dbfecec1d3973e0b, type: 3}
   m_Name: torch
   m_EditorClassIdentifier: 
-  cardName: Torch
+  cardName: "\u706B\u628A"
   cardType: 2
   icon: {fileID: 0}
   description: It's torch.

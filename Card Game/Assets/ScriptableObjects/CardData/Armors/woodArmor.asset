@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9835156b815045f4dba65548151daddc, type: 3}
   m_Name: woodArmor
   m_EditorClassIdentifier: 
-  cardName: Wood Armor
+  cardName: "\u6728\u76D4\u7532"
   cardType: 3
   icon: {fileID: 21300000, guid: 6e25e74d93f2a85458c20d2e7958b0a7, type: 3}
   description: It's wood armor

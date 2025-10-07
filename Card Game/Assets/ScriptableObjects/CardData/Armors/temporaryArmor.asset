@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9835156b815045f4dba65548151daddc, type: 3}
   m_Name: temporaryArmor
   m_EditorClassIdentifier: 
-  cardName: Temporary Armor
+  cardName: "\u4E34\u65F6\u76D4\u7532"
   cardType: 3
   icon: {fileID: 21300000, guid: 321d8291ab2c6cb4b81d3dda37a91ef6, type: 3}
   description: It's temporary armor.

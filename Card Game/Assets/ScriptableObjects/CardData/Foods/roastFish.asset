@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd0d455773aea61409f308629ede430c, type: 3}
   m_Name: roastFish
   m_EditorClassIdentifier: 
-  cardName: Roast Fish
+  cardName: "\u70E4\u9C7C"
   cardType: 5
   icon: {fileID: 0}
   description: It's roast fish.
