@@ -13,6 +13,9 @@ public class CombatManager : MonoBehaviour
     [Header("游戏结束设置")]
     public float gameOverRestartDelay = 3f; // 游戏结束后的重启延迟
 
+    // 🎯 新增：最终BOSS名称
+    private const string FINAL_BOSS_NAME = "狗熊王";
+
     private void Awake()
     {
         if (Instance == null)
@@ -25,17 +28,68 @@ public class CombatManager : MonoBehaviour
             Destroy(gameObject);
         }
     }
+    private void Start()
+    {
+        Debug.Log("=== 场景检查开始 ===");
+
+        // 检查所有场景
+        for (int i = 0; i < SceneManager.sceneCountInBuildSettings; i++)
+        {
+            string scenePath = SceneUtility.GetScenePathByBuildIndex(i);
+            string sceneName = System.IO.Path.GetFileNameWithoutExtension(scenePath);
+            Debug.Log($"场景 [{i}]: {sceneName}");
+
+            // 特别标记结束场景
+            if (sceneName == "game win scene" || sceneName == "game lose scene")
+            {
+                Debug.Log($"⭐ 找到结束场景: {sceneName} 在索引 {i}");
+            }
+        }
+
+        Debug.Log("=== 场景检查结束 ===");
+    }
+    private void CheckScenesInBuild()
+    {
+        Debug.Log("🔍 检查构建设置中的场景:");
+
+        for (int i = 0; i < SceneManager.sceneCountInBuildSettings; i++)
+        {
+            string scenePath = SceneUtility.GetScenePathByBuildIndex(i);
+            string sceneName = System.IO.Path.GetFileNameWithoutExtension(scenePath);
+            Debug.Log($"  场景 [{i}]: {sceneName}");
+        }
+
+        // 检查特定场景
+        CheckSceneExists("game win scene");
+        CheckSceneExists("game lose scene");
+    }
+
+    private void CheckSceneExists(string sceneName)
+    {
+        bool exists = false;
+        for (int i = 0; i < SceneManager.sceneCountInBuildSettings; i++)
+        {
+            string scenePath = SceneUtility.GetScenePathByBuildIndex(i);
+            string nameInBuild = System.IO.Path.GetFileNameWithoutExtension(scenePath);
+            if (nameInBuild == sceneName)
+            {
+                exists = true;
+                break;
+            }
+        }
+        Debug.Log($"场景 '{sceneName}' {(exists ? "✅ 存在" : "❌ 不存在")}");
+    }
 
     /// <summary>
     /// 执行战斗逻辑
     /// </summary>
     public void PerformCombat(MonsterCardData monster, MainCharacterCardData mainChar, GameObject monsterObject = null, MonsterHealthController healthController = null)
     {
-        Debug.Log(" CombatManager.PerformCombat 被调用！");
+        Debug.Log("CombatManager.PerformCombat 被调用！");
 
         if (monster == null)
         {
-            Debug.LogError("怪物数据为空！");
+            Debug.LogError(" 怪物数据为空！");
             return;
         }
 
@@ -103,7 +157,7 @@ public class CombatManager : MonoBehaviour
             int previousDurability = currentArmor.durability;
             currentArmor.durability--;
             currentArmor.durability = Mathf.Max(currentArmor.durability, 0);
-            Debug.Log($"盔甲耐久: {previousDurability} -> {currentArmor.durability}");
+            Debug.Log($" 盔甲耐久: {previousDurability} -> {currentArmor.durability}");
 
             // 🎯 新增：立即更新盔甲UI显示
             UpdateArmorUI(currentArmor);
@@ -127,12 +181,12 @@ public class CombatManager : MonoBehaviour
         {
             healthController.SetHealth(newMonsterHealth);
 
-            // 🎯 🎯 🎯 【关键修改位置】新增：确保怪物UI更新
+            // 🎯 新增：确保怪物UI更新
             healthController.ForceRefreshUI();
             Debug.Log($"强制刷新怪物UI: {newMonsterHealth} HP");
         }
 
-        Debug.Log($"怪物血量: {previousMonsterHealth} -> {newMonsterHealth} (受到{characterAttack}伤害)");
+        Debug.Log($" 怪物血量: {previousMonsterHealth} -> {newMonsterHealth} (受到{characterAttack}伤害)");
 
         Debug.Log("战斗计算完成！");
 
@@ -142,8 +196,30 @@ public class CombatManager : MonoBehaviour
         // 更新UI
         UpdateCombatUI(mainChar, actualDamage);
 
-        // 检查游戏结束
-        CheckGameOver(mainChar);
+        // 🎯 修改：检查游戏结束或胜利
+        CheckGameResult(mainChar, monster, newMonsterHealth);
+    }
+
+    /// <summary>
+    /// 🎯 新增：检查游戏结果（胜利或失败）
+    /// </summary>
+    private void CheckGameResult(MainCharacterCardData mainChar, MonsterCardData monster, int monsterHealthAfter)
+    {
+        // 检查游戏失败（主角死亡）
+        if (mainChar.health <= 0)
+        {
+            Debug.Log("游戏结束！主角死亡");
+            ShowGameOver(false); // 失败
+            return;
+        }
+
+        // 🎯 新增：检查游戏胜利（击败狗熊王且主角存活）
+        if (monster.cardName == FINAL_BOSS_NAME && monsterHealthAfter <= 0 && mainChar.health > 0)
+        {
+            Debug.Log($"击败最终BOSS {FINAL_BOSS_NAME}！游戏胜利！");
+            ShowGameOver(true); // 胜利
+            return;
+        }
     }
 
     /// <summary>
@@ -316,42 +392,46 @@ public class CombatManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 检查游戏是否结束
+    /// 🎯 修改：显示游戏结束（现在支持胜利和失败）
     /// </summary>
-    private void CheckGameOver(MainCharacterCardData mainChar)
+    private void ShowGameOver(bool isWin)
     {
-        if (mainChar.health <= 0)
+        Debug.Log($"显示游戏结束界面: {(isWin ? "胜利" : "失败")}");
+
+        // 🎯 方法1：使用场景索引
+        if (isWin)
         {
-            Debug.Log("游戏结束！主角死亡");
-            ShowGameOver();
+            SceneManager.LoadScene(6); // game win scene 的索引
+        }
+        else
+        {
+            SceneManager.LoadScene(7); // game lose scene 的索引
         }
     }
 
     /// <summary>
-    /// 显示游戏结束
+    /// 🎯 移除旧的 CheckGameOver 方法，因为已经被 CheckGameResult 替代
     /// </summary>
-    private void ShowGameOver()
-    {
-        Debug.Log("显示游戏结束界面...");
-
-        // 这里可以显示简单的游戏结束信息
-        // 在实际项目中，这里会显示UI界面
-
-        // 临时解决方案：在Console显示信息并重启游戏
-        Debug.Log("游戏结束！3秒后重新开始...");
-
-        // 延迟后重启场景
-        Invoke("RestartGame", gameOverRestartDelay);
-    }
+    // private void CheckGameOver(MainCharacterCardData mainChar)
+    // {
+    //     // 这个方法已经被 CheckGameResult 替代
+    // }
 
     /// <summary>
-    /// 重启游戏
+    /// 🎯 移除旧的 ShowGameOver 方法，因为已经被新的重载版本替代
     /// </summary>
-    private void RestartGame()
-    {
-        Debug.Log("重新开始游戏...");
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-    }
+    // private void ShowGameOver()
+    // {
+    //     // 这个方法已经被新的 ShowGameOver(bool isWin) 替代
+    // }
+
+    /// <summary>
+    /// 🎯 移除旧的 RestartGame 方法，因为现在直接跳转到结束场景
+    /// </summary>
+    // private void RestartGame()
+    // {
+    //     // 这个方法不再需要，因为直接跳转到结束场景
+    // }
 
     /// <summary>
     /// 预检查是否可以战斗
@@ -378,7 +458,7 @@ public class CombatManager : MonoBehaviour
         }
         else if (mainChar.health <= 0)
         {
-            return $"主角被击败了...";
+            return "主角被击败了...";
         }
         else
         {
@@ -410,4 +490,5 @@ public class CombatManager : MonoBehaviour
     {
         Debug.Log("战斗管理器已重置");
     }
+
 }
