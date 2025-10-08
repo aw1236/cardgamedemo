@@ -183,7 +183,7 @@ public class EquipmentSlot : CardSlot
     /// <summary>
     /// 将装备应用到主角数据
     /// </summary>
-    private void ApplyEquipmentToMainCharacter(CardData cardData)
+    public void ApplyEquipmentToMainCharacter(CardData cardData)
     {
         if (MainCharacterSlot.Instance == null || MainCharacterSlot.Instance.mainCharacterData == null)
         {

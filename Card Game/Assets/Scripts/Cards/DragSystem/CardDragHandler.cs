@@ -1,9 +1,9 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-    [Header("ÍÏ×§ÉèÖÃ")]
+    [Header("æ‹–æ‹½è®¾ç½®")]
     public float dragAlpha = 0.7f;
 
     private RectTransform rectTransform;
@@ -13,7 +13,7 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     private Transform originalParent;
     private CardArrangement arrangement;
 
-    // ĞÂÔö£º¹«¿ªOriginalParentÊôĞÔ£¬·½±ãCardSlot·ÃÎÊ
+    // æ–°å¢ï¼šå…¬å¼€OriginalParentå±æ€§ï¼Œæ–¹ä¾¿CardSlotè®¿é—®
     public Transform OriginalParent { get; set; }
 
     public static CardDragHandler CurrentlyDraggedCard { get; private set; }
@@ -30,22 +30,22 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        // ¼ì²éÊÇ·ñ´Ó¸üĞÂ²ÛÍÏ³ö£¬Èç¹ûÊÇÔòÔÊĞíÍÏ³öµ«²»ÄÜÍÏÈëÆäËû¿¨ÅÆµ½¸üĞÂ²Û
+        // æ£€æŸ¥æ˜¯å¦ä»æ›´æ–°æ§½æ‹–å‡ºï¼Œå¦‚æœæ˜¯åˆ™å…è®¸æ‹–å‡ºä½†ä¸èƒ½æ‹–å…¥å…¶ä»–å¡ç‰Œåˆ°æ›´æ–°æ§½
         CardArrangement sourceArrangement = GetComponentInParent<CardArrangement>();
         if (sourceArrangement != null && sourceArrangement.isUpdateSlot)
         {
-            Debug.Log("´Ó¸üĞÂ²ÛÍÏ³ö¿¨ÅÆ");
+            Debug.Log("ä»æ›´æ–°æ§½æ‹–å‡ºå¡ç‰Œ");
         }
 
         originalPosition = rectTransform.anchoredPosition;
         originalParent = transform.parent;
-        OriginalParent = originalParent; // ÉèÖÃ¹«¿ªÊôĞÔ
+        OriginalParent = originalParent; // è®¾ç½®å…¬å¼€å±æ€§
 
         CardSlot currentSlot = originalParent.GetComponent<CardSlot>();
         if (currentSlot != null)
         {
-            Debug.Log($"´Ó¿¨²Û {currentSlot.slotType} ÖĞÍÏ³ö¿¨ÅÆ");
-            // ĞŞ¸´£ºÊ¹ÓÃSafeRemoveCard¶ø²»ÊÇRemoveCard£¬±ÜÃâ¸¸×Ó¹ØÏµ»ìÂÒ
+            Debug.Log($"ä»å¡æ§½ {currentSlot.slotType} ä¸­æ‹–å‡ºå¡ç‰Œ");
+            // ä¿®å¤ï¼šä½¿ç”¨SafeRemoveCardè€Œä¸æ˜¯RemoveCardï¼Œé¿å…çˆ¶å­å…³ç³»æ··ä¹±
             currentSlot.SafeRemoveCard();
         }
 
@@ -78,17 +78,17 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         canvasGroup.alpha = 1f;
         canvasGroup.blocksRaycasts = true;
 
-        // ¼ì²é·ÅÖÃÄ¿±ê
+        // æ£€æŸ¥æ”¾ç½®ç›®æ ‡
         CardSlot targetSlot = null;
         CardArrangement targetArrangement = null;
 
-        // ¼ì²éÊÇ·ñ·ÅÖÃÔÚÁË¿¨²ÛÉÏ
+        // æ£€æŸ¥æ˜¯å¦æ”¾ç½®åœ¨äº†å¡æ§½ä¸Š
         if (eventData.pointerEnter != null)
         {
             targetSlot = eventData.pointerEnter.GetComponent<CardSlot>();
             targetArrangement = eventData.pointerEnter.GetComponent<CardArrangement>();
 
-            // Èç¹ûÄ¿±êÓĞ¸¸¼¶£¬Ò²¼ì²é¸¸¼¶£¨´¦ÀíÇ¶Ì×Çé¿ö£©
+            // å¦‚æœç›®æ ‡æœ‰çˆ¶çº§ï¼Œä¹Ÿæ£€æŸ¥çˆ¶çº§ï¼ˆå¤„ç†åµŒå¥—æƒ…å†µï¼‰
             if (targetSlot == null && eventData.pointerEnter.transform.parent != null)
             {
                 targetSlot = eventData.pointerEnter.transform.parent.GetComponent<CardSlot>();
@@ -101,43 +101,43 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
         bool shouldReturn = false;
 
-        // ÖØÒª£ºÈç¹ûÄ¿±êÊÇ¸üĞÂ²Û£¬¾Ü¾ø·ÅÖÃ²¢µ¯»Ø
+        // é‡è¦ï¼šå¦‚æœç›®æ ‡æ˜¯æ›´æ–°æ§½ï¼Œæ‹’ç»æ”¾ç½®å¹¶å¼¹å›
         if (targetArrangement != null && targetArrangement.isUpdateSlot)
         {
-            Debug.Log("ÎŞ·¨½«¿¨ÅÆ·ÅÖÃµ½¸üĞÂ²ÛÖĞ");
+            Debug.Log("æ— æ³•å°†å¡ç‰Œæ”¾ç½®åˆ°æ›´æ–°æ§½ä¸­");
             shouldReturn = true;
         }
-        // Èç¹ûÄ¿±ê¿¨²ÛÊÇ¸üĞÂ²ÛÀàĞÍ£¬Ò²¾Ü¾ø
+        // å¦‚æœç›®æ ‡å¡æ§½æ˜¯æ›´æ–°æ§½ç±»å‹ï¼Œä¹Ÿæ‹’ç»
         else if (targetSlot != null)
         {
-            // ¼ì²éÄ¿±ê¿¨²ÛÊÇ·ñÊÇ¸üĞÂ²ÛµÄÒ»²¿·Ö
+            // æ£€æŸ¥ç›®æ ‡å¡æ§½æ˜¯å¦æ˜¯æ›´æ–°æ§½çš„ä¸€éƒ¨åˆ†
             CardArrangement slotArrangement = targetSlot.GetComponentInParent<CardArrangement>();
             if (slotArrangement != null && slotArrangement.isUpdateSlot)
             {
-                Debug.Log("ÎŞ·¨½«¿¨ÅÆ·ÅÖÃµ½¸üĞÂ²ÛµÄ¿¨²ÛÖĞ");
+                Debug.Log("æ— æ³•å°†å¡ç‰Œæ”¾ç½®åˆ°æ›´æ–°æ§½çš„å¡æ§½ä¸­");
                 shouldReturn = true;
             }
         }
-        // ¼ì²éÊÇ·ñÔÚ¿¨²ÛÇøÓòÄÚµ«Ã»ÓĞÓĞĞ§Ä¿±ê
+        // æ£€æŸ¥æ˜¯å¦åœ¨å¡æ§½åŒºåŸŸå†…ä½†æ²¡æœ‰æœ‰æ•ˆç›®æ ‡
         else if (DropZoneManager.Instance != null && !DropZoneManager.Instance.IsInAnySlotZone(eventData.position))
         {
             shouldReturn = true;
-            Debug.Log("¿¨ÅÆÃ»ÓĞ·ÅÖÃÔÚ¿¨²ÛÇøÓò£¬ÒÑ·µ»ØÔ­Î»ÖÃ");
+            Debug.Log("å¡ç‰Œæ²¡æœ‰æ”¾ç½®åœ¨å¡æ§½åŒºåŸŸï¼Œå·²è¿”å›åŸä½ç½®");
         }
-        // Ã»ÓĞ³É¹¦·ÅÖÃµ½¾ßÌå¿¨²Û
+        // æ²¡æœ‰æˆåŠŸæ”¾ç½®åˆ°å…·ä½“å¡æ§½
         else if (transform.parent == canvas.transform && targetSlot == null)
         {
             shouldReturn = true;
         }
 
-        // ĞŞ¸´£ºÈ·±£¿¨ÅÆ×îÖÕÓĞÕıÈ·µÄ¸¸¼¶
+        // ä¿®å¤ï¼šç¡®ä¿å¡ç‰Œæœ€ç»ˆæœ‰æ­£ç¡®çš„çˆ¶çº§
         if (shouldReturn)
         {
             ReturnToOriginalPosition();
         }
         else if (targetSlot == null)
         {
-            // Èç¹ûÃ»ÓĞÄ¿±ê¿¨²Ûµ«Ò²²»Ó¦¸Ã·µ»Ø£¬È·±£¿¨ÅÆÓĞ¸¸¼¶
+            // å¦‚æœæ²¡æœ‰ç›®æ ‡å¡æ§½ä½†ä¹Ÿä¸åº”è¯¥è¿”å›ï¼Œç¡®ä¿å¡ç‰Œæœ‰çˆ¶çº§
             ReturnToOriginalPosition();
         }
 
@@ -146,10 +146,10 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
     public void ReturnToOriginalContainer()
     {
-        // ĞŞ¸´£º¼ì²éÔ­Ê¼¸¸¼¶ÊÇ·ñÈÔÈ»ÓĞĞ§
+        // ä¿®å¤ï¼šæ£€æŸ¥åŸå§‹çˆ¶çº§æ˜¯å¦ä»ç„¶æœ‰æ•ˆ
         if (originalParent == null)
         {
-            Debug.LogWarning("Ô­Ê¼¸¸¼¶ÒÑÏú»Ù£¬ÎŞ·¨·µ»ØÈİÆ÷");
+            Debug.LogWarning("åŸå§‹çˆ¶çº§å·²é”€æ¯ï¼Œæ— æ³•è¿”å›å®¹å™¨");
             return;
         }
 
@@ -163,7 +163,7 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             rectTransform.anchoredPosition = originalPosition;
         }
 
-        // ĞŞ¸´£ºÍ¨ÖªÔ­Ê¼¿¨²ÛÖØĞÂÓµÓĞÕâÕÅ¿¨ÅÆ
+        // ä¿®å¤ï¼šé€šçŸ¥åŸå§‹å¡æ§½é‡æ–°æ‹¥æœ‰è¿™å¼ å¡ç‰Œ
         CardSlot originalSlot = originalParent.GetComponent<CardSlot>();
         if (originalSlot != null)
         {
@@ -185,7 +185,7 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         transform.SetParent(newParent);
         rectTransform.anchoredPosition = newPosition;
         originalParent = newParent;
-        OriginalParent = newParent; // ¸üĞÂ¹«¿ªÊôĞÔ
+        OriginalParent = newParent; // æ›´æ–°å…¬å¼€å±æ€§
         originalPosition = newPosition;
 
         CardArrangement newArrangement = newParent.GetComponent<CardArrangement>();
@@ -197,11 +197,11 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
     public void ReturnToOriginalPosition()
     {
-        // ĞŞ¸´£ºÌí¼Ó°²È«¼ì²é
+        // ä¿®å¤ï¼šæ·»åŠ å®‰å…¨æ£€æŸ¥
         if (originalParent == null)
         {
-            Debug.LogWarning("Ô­Ê¼¸¸¼¶ÒÑÏú»Ù£¬ÎŞ·¨·µ»ØÔ­Î»ÖÃ");
-            // Èç¹ûÃ»ÓĞÔ­Ê¼¸¸¼¶£¬³¢ÊÔÕÒµ½ºÏÊÊµÄ¸¸¼¶»òÏú»Ù
+            Debug.LogWarning("åŸå§‹çˆ¶çº§å·²é”€æ¯ï¼Œæ— æ³•è¿”å›åŸä½ç½®");
+            // å¦‚æœæ²¡æœ‰åŸå§‹çˆ¶çº§ï¼Œå°è¯•æ‰¾åˆ°åˆé€‚çš„çˆ¶çº§æˆ–é”€æ¯
             if (canvas != null)
             {
                 transform.SetParent(canvas.transform);
@@ -217,7 +217,7 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             arrangement.AddCard(rectTransform);
         }
 
-        // ĞŞ¸´£ºÈ·±£Ô­Ê¼¿¨²ÛÖªµÀ¿¨ÅÆÒÑ·µ»Ø
+        // ä¿®å¤ï¼šç¡®ä¿åŸå§‹å¡æ§½çŸ¥é“å¡ç‰Œå·²è¿”å›
         CardSlot originalSlot = originalParent.GetComponent<CardSlot>();
         if (originalSlot != null)
         {
@@ -225,11 +225,23 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             if (cardView != null && originalSlot.CurrentCardView == null)
             {
                 originalSlot.CurrentCardView = cardView;
+
+                // ğŸ¯ æ–°å¢ï¼šå¦‚æœæ˜¯è£…å¤‡æ§½ï¼Œé‡æ–°åº”ç”¨è£…å¤‡æ•ˆæœ
+                EquipmentSlot equipmentSlot = originalSlot as EquipmentSlot;
+                if (equipmentSlot != null)
+                {
+                    CardData cardData = cardView.GetCardData();
+                    if (cardData != null)
+                    {
+                        equipmentSlot.ApplyEquipmentToMainCharacter(cardData);
+                        Debug.Log($"è£…å¤‡å¡ç‰Œè¿”å›æ§½ä½ï¼Œé‡æ–°åº”ç”¨æ•ˆæœ: {cardData.cardName}");
+                    }
+                }
             }
         }
     }
 
-    // ĞÂÔö£ºÇ¿ÖÆ·µ»ØÔ­Î»ÖÃ£¨ÓÃÓÚÒì³£Çé¿ö£©
+    // æ–°å¢ï¼šå¼ºåˆ¶è¿”å›åŸä½ç½®ï¼ˆç”¨äºå¼‚å¸¸æƒ…å†µï¼‰
     public void ForceReturnToOriginal()
     {
         if (originalParent != null)
