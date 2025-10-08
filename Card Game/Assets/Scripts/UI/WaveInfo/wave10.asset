@@ -17,6 +17,6 @@ MonoBehaviour:
   cardCount: 4
   useRandomCards: 1
   specificCards: []
-  cardTypesToSpawn: 020000000400000005000000
+  cardTypesToSpawn: 050000000400000002000000
   bossCard: {fileID: 11400000, guid: 157d4b9f24d54c945a55506201dc5f21, type: 2}
   spawnBossThisWave: 1

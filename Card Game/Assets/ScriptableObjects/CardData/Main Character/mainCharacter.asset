@@ -18,8 +18,8 @@ MonoBehaviour:
   description: It's main charater.
   backgroundColor: {r: 0.49803925, g: 0.49803925, b: 0.49803925, a: 1}
   cardBackgroundPrefab: {fileID: 2238023044661848372, guid: 4313032649092e34c8ee9233ae69043c, type: 3}
-  maxHealth: 120
-  health: 120
+  maxHealth: 15
+  health: 15
   baseAttack: 1
   equippedWeapon: {fileID: 0}
   equippedArmor: {fileID: 0}
