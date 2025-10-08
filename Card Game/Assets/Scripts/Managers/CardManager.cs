@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
 
 public class CardManager : MonoBehaviour
@@ -21,6 +21,20 @@ public class CardManager : MonoBehaviour
         else
         {
             Destroy(gameObject);
+        }
+    }
+
+    // 在 CardManager 的 Awake 或 Start 方法中添加调试
+    private void Start()
+    {
+        Debug.Log($"CardManager 中的所有卡牌数量: {allCards.Count}");
+        foreach (var card in allCards)
+        {
+            Debug.Log($"卡牌: {card.cardName}, 类型: {card.cardType}");
+            if (card.cardName.Contains("chick")) // 根据你的蜜蜂卡实际名称调整
+            {
+                Debug.Log("✅ 找到蜜蜂卡！");
+            }
         }
     }
 
