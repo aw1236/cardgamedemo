@@ -7,7 +7,11 @@ public class ArmorCardData : CardData
     public int  attack; // 攻击力
     public int defense; // 防御力
     public int durability; // 当前耐久度
-    public int maxDurability; // 🎯 新增：最大耐久度
+    public int maxDurability;// 🎯 新增：最大耐久度
+    public int MaxDurability
+    {
+        get { return MaxDurability; }
+    }
 
     //保证类型只能是Armor
     private void OnValidate()

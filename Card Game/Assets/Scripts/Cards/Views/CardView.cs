@@ -155,7 +155,7 @@ public class CardView : MonoBehaviour
                 return $"攻击力: {weapon.attack}\n耐久: {weapon.durability}/{weapon.maxDurability}";
 
             case ArmorCardData armor:
-                return $"防御力: {armor.defense}\n耐久: {armor.durability}/{armor.maxDurability}";
+                return $"防御力: {armor.defense}\n耐久: {armor.durability}/{armor.MaxDurability}";
 
             case FoodCardData food:
                 return string.Format(food.useDescription, food.healAmount);

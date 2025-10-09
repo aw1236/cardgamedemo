@@ -117,7 +117,7 @@ public class EquipmentSlot : CardSlot
         target.description = source.description;
         target.attack = source.attack;
         target.durability = source.durability; // 使用原始耐久度
-        target.maxDurability = source.durability; // 记录最大耐久度
+        target.maxDurability = source.maxDurability; // 记录最大耐久度
 
         // 🎯 新增：复制背景预制体引用
         target.cardBackgroundPrefab = source.cardBackgroundPrefab;
@@ -134,7 +134,7 @@ public class EquipmentSlot : CardSlot
         target.description = source.description;
         target.defense = source.defense;
         target.durability = source.durability; // 使用原始耐久度
-        target.maxDurability = source.durability; // 记录最大耐久度
+        target.maxDurability = source.maxDurability; // 记录最大耐久度
 
         // 🎯 新增：复制背景预制体引用
         target.cardBackgroundPrefab = source.cardBackgroundPrefab;
