@@ -269,7 +269,6 @@ public class TestSceneManager : MonoBehaviour
             if (!isSlotEmpty && !waveInProgress)
             {
                 int remainingCards = arrangement.GetCardsInContainerCount();
-                Debug.Log($"更新槽中还有 {remainingCards} 张卡牌，请清空后再开始下一波");
             }
         }
     }

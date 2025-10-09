@@ -172,8 +172,10 @@ public class EquipmentSlot : CardSlot
         switch (equipmentType)
         {
             case EquipmentType.Weapon:
+                Debug.Log($"检查卡牌类型是否为武器: {cardData.cardName} 是武器吗？ {cardData is WeaponCardData}");
                 return cardData is WeaponCardData;
             case EquipmentType.Armor:
+                Debug.Log($"检查卡牌类型是否为盔甲: {cardData.cardName} 是盔甲吗？ {cardData is ArmorCardData}");
                 return cardData is ArmorCardData;
             default:
                 return false;

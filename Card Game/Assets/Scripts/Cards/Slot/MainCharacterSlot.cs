@@ -253,7 +253,7 @@ public class MainCharacterSlot : MonoBehaviour, IDropHandler
         {
             if (mainCharacterData.equippedWeapon != null)
             {
-                int totalAttack = mainCharacterData.baseAttack + mainCharacterData.equippedWeapon.attack;
+                int totalAttack =  mainCharacterData.equippedWeapon.attack;
                 weaponStatusText.text = $"武器: {mainCharacterData.equippedWeapon.cardName} (攻击:{totalAttack}, 耐久:{mainCharacterData.equippedWeapon.durability})";
                 weaponStatusText.color = Color.red;
             }
