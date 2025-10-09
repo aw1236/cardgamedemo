@@ -41,7 +41,7 @@ public class MainCharacterSlot : MonoBehaviour, IDropHandler
 
         FindUIElements();
         UpdateMainCharacterDisplay();
-        AddCombatLog($"主角血量：{mainCharacterData.health}");
+        AddCombatLog($"主角初始化完成-血量：{mainCharacterData.health}");
     }
 
     private void CopyCardData(MainCharacterCardData source, MainCharacterCardData target)
