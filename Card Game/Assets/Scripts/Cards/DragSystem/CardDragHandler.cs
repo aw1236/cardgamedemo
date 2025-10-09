@@ -78,14 +78,6 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         canvasGroup.alpha = 1f;
         canvasGroup.blocksRaycasts = true;
 
-        // 新增：在拖拽结束时强制重置所有可能相关的卡槽状态
-        CardSlot originalSlot = originalParent?.GetComponent<CardSlot>();
-        if (originalSlot != null)
-        {
-            // 调用新增的ForceResetSlot方法
-            originalSlot.ForceResetSlot();
-        }
-
         // 检查放置目标
         CardSlot targetSlot = null;
         CardArrangement targetArrangement = null;
@@ -220,13 +212,15 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         transform.SetParent(originalParent);
         rectTransform.anchoredPosition = originalPosition;
 
-        // 新增：返回时强制重置原卡槽状态
+        if (arrangement != null)
+        {
+            arrangement.AddCard(rectTransform);
+        }
+
+        // 修复：确保原始卡槽知道卡牌已返回
         CardSlot originalSlot = originalParent.GetComponent<CardSlot>();
         if (originalSlot != null)
         {
-            // 调用新增的ForceResetSlot方法
-            originalSlot.ForceResetSlot();
-
             CardView cardView = GetComponent<CardView>();
             if (cardView != null && originalSlot.CurrentCardView == null)
             {
@@ -244,11 +238,6 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
                     }
                 }
             }
-        }
-
-        if (arrangement != null)
-        {
-            arrangement.AddCard(rectTransform);
         }
     }
 
