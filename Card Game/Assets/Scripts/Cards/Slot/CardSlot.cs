@@ -95,6 +95,15 @@ public class CardSlot : MonoBehaviour, IDropHandler
 
     public virtual void PlaceCard(Transform cardTransform, CardView cardView)
     {
+        // 新增：放置前强制检查卡槽状态
+        ForceResetSlot();
+
+        // 原有的移除当前卡牌逻辑
+        if (CurrentCardView != null)
+        {
+            RemoveCard();
+        }
+
         // 移除当前卡牌（如果有）
         if (CurrentCardView != null)
         {
@@ -201,5 +210,51 @@ public class CardSlot : MonoBehaviour, IDropHandler
             OnCardRemoved(CurrentCardView);
             CurrentCardView = null;
         }
+    }
+
+    // 在 CardSlot 类中添加这个方法
+
+    /// <summary>
+
+    /// 强制重置卡槽状态（用于修复槽位失效问题）
+
+    /// </summary>
+
+    public void ForceResetSlot()
+
+    {
+
+        // 检查卡槽中实际是否有卡牌
+
+        if (transform.childCount == 0 && CurrentCardView != null)
+
+        {
+            Debug
+    .LogWarning($"强制重置 {slotType} 槽位状态，CurrentCardView 引用异常");
+            CurrentCardView
+    = null;
+
+        }
+
+        // 检查卡槽中有卡牌但 CurrentCardView 为 null 的情况
+
+        else if (transform.childCount > 0 && CurrentCardView == null)
+
+        {
+
+            CardView cardView = GetComponentInChildren<CardView>();
+
+            if (cardView != null)
+
+            {
+                Debug
+    .LogWarning($"强制恢复 {slotType} 槽位状态，重新设置 CurrentCardView");
+                CurrentCardView
+    = cardView;
+
+            }
+
+        }
+
     }
 }
