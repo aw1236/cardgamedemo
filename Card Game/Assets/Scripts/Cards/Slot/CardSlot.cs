@@ -14,12 +14,45 @@ public class CardSlot : MonoBehaviour, IDropHandler
     // 检查卡槽是否已满
     public bool IsFull()
     {
+        // 修复：增加额外的安全检查
+        if (CurrentCardView != null)
+        {
+            // 检查卡牌对象是否已被销毁或无效
+            if (CurrentCardView.gameObject == null || !CurrentCardView.gameObject.activeInHierarchy)
+            {
+                CurrentCardView= null;
+                return false;
+            }
+
+            // 检查卡牌是否仍然在正确的父级中
+            if (CurrentCardView.transform.parent != transform)
+            {
+                CurrentCardView= null;
+                return false;
+            }
+        }
+
         return CurrentCardView != null;
     }
 
     // 检查是否可以接受卡牌
     public virtual bool CanAcceptCard(CardData cardData)
     {
+        // 修复：在检查前先验证当前卡牌状态
+        if (CurrentCardView != null)
+        {
+            // 如果当前卡牌已经被销毁或不在这个槽位中，清除引用
+            if (CurrentCardView.gameObject == null ||
+                CurrentCardView
+    .transform.parent != transform)
+            {
+                Debug
+    .LogWarning($"检测到无效的CurrentCardView引用，已自动清除");
+                CurrentCardView
+    = null;
+            }
+        }
+
         // 新增：检查这个卡槽是否是更新槽的一部分
         CardArrangement parentArrangement = GetComponentInParent<CardArrangement>();
         if (parentArrangement != null && parentArrangement.isUpdateSlot)
