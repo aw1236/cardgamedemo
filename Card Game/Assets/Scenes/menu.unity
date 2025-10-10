@@ -1045,6 +1045,7 @@ GameObject:
   - component: {fileID: 4927446462093384572}
   - component: {fileID: 4722560193975780931}
   - component: {fileID: 6745572657770105621}
+  - component: {fileID: 6745572657770105622}
   m_Layer: 5
   m_Name: exit button
   m_TagString: Untagged
@@ -1594,7 +1595,43 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4722560193975780931}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2556454284622887232}
+        m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
+        m_MethodName: PlayOneShot
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 8300000, guid: 953bb8ad094e03a469db455fef08e5f5, type: 3}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.AudioClip, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 6745572657770105622}
+        m_TargetAssemblyTypeName: quit, Assembly-CSharp
+        m_MethodName: Gameover
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &6745572657770105622
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3967442493626031859}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e802940a73b7e9944b410232ccecc9ee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7196531725808246055
 GameObject:
   m_ObjectHideFlags: 0
