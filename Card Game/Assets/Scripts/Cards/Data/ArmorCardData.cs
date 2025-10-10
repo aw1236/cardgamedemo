@@ -10,7 +10,11 @@ public class ArmorCardData : CardData
     public int maxDurability;// 🎯 新增：最大耐久度
     public int MaxDurability
     {
-        get { return MaxDurability; }
+        get 
+        { 
+            return maxDurability;
+        }
+        set { }
     }
 
     //保证类型只能是Armor

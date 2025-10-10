@@ -301,7 +301,7 @@ public class CraftingManager : MonoBehaviour
             tempArmorData.attack = armorData.attack;
             tempArmorData.defense = armorData.defense;
             tempArmorData.durability = Mathf.Max(0, armorData.durability - durabilityCost);
-            tempArmorData.maxDurability = armorData.MaxDurability;
+            tempArmorData.maxDurability = armorData.maxDurability;
 
             tempCardData = tempArmorData;
             Debug.Log($"Reduced {tempArmorData.cardName} durability to {tempArmorData.durability} (from {armorData.durability})");
